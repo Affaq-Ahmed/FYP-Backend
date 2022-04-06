@@ -10,10 +10,12 @@ const {
 	FieldValue,
 } = require("firebase-admin/firestore");
 
-const serviceAccount = require("./path/to/serviceAccountKey.json");
+const serviceAccount = require("../config/firebase1");
 
 initializeApp({
 	credential: cert(serviceAccount),
 });
 
-export const db = getFirestore();
+const db = getFirestore();
+
+module.exports = db;
