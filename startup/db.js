@@ -10,7 +10,7 @@ const {
 	FieldValue,
 } = require("firebase-admin/firestore");
 
-const serviceAccount = require("../config/firebase1");
+const serviceAccount = require("../config/firebase");
 
 initializeApp({
 	credential: cert(serviceAccount),
