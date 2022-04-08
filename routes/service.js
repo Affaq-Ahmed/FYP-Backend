@@ -2,24 +2,24 @@ const express = require("express");
 const router = express.Router();
 const { db } = require("../config/firebase");
 
-const user = db.collection("users");
+const service = db.collection("services");
 
 router.get("/", async (req, res) => {
-	const snapshot = await user.get();
+	const snapshot = await service.get();
 
-	var users = [];
+	var services = [];
 	snapshot.forEach((doc) => {
 		console.log(doc.id, "=>", doc.data());
-		users.push(doc.data());
+		services.push(doc.data());
 	});
-	res.send(users);
+	res.send(services);
 });
 
-router.post("/createProfile", async (req, res) => {
+router.post("/createService", async (req, res) => {
 	const data = req.body;
 	console.log("Data: ", data);
 
-	const result = await user.add(data);
+	const result = await service.add(data);
 	console.log(result);
 	res.send(result);
 });
@@ -27,15 +27,15 @@ router.post("/createProfile", async (req, res) => {
 router.get("/byId", async (req, res) => {
 	const snapshot = await user.get();
 
-	var resultUser;
+	var resultSerivce;
 	snapshot.forEach((doc) => {
 		console.log(doc.id, "=>", doc.data());
 		if (doc.id == req.body.Id) {
-			resultUser = doc.data();
+			resultSerivce = doc.data();
 		}
 	});
-	console.log(resultUser);
-	res.send(resultUser);
+	console.log(resultSerivce);
+	res.send(resultSerivce);
 });
 
 module.exports = router;
