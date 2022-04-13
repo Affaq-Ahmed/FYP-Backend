@@ -16,26 +16,38 @@ router.get("/", async (req, res) => {
 });
 
 router.post("/createProfile", async (req, res) => {
-	const data = req.body;
-	console.log("Data: ", data);
+	const check = user.doc(req.body.userName);
+	if (check.exists) res.send("User Already Exists.");
+	else {
+		const data = req.body;
 
-	const result = await user.add(data);
-	console.log(result);
-	res.send(result);
+		var userData = {
+			firstName: data.firstName,
+			lastName: data.lastName,
+			username: data.username,
+			dob: data.dob,
+			email: data.email,
+			address: data.address,
+			//cnic: data.cnic,
+			profileImage: data.profileImage,
+			profileStatus: "0",
+			//cnicFront: data.cnicFront,
+			//cnicBack: data.cnicBack,
+		};
+
+		const result = await user.set(userData);
+		console.log(result);
+		res.status(200).send(result);
+	}
 });
 
-router.get("/byId", async (req, res) => {
-	const snapshot = await user.get();
-
-	var resultUser;
-	snapshot.forEach((doc) => {
-		console.log(doc.id, "=>", doc.data());
-		if (doc.id == req.body.Id) {
-			resultUser = doc.data();
-		}
-	});
-	console.log(resultUser);
-	res.send(resultUser);
+router.get("/byUsername", async (req, res) => {
+	const result = await user.doc(req.body.username).get();
+	if (!result.exists) res.send("User Does not Exists.");
+	else {
+		console.log(result._fieldsProto);
+		res.send(result._fieldsProto);
+	}
 });
 
 module.exports = router;
