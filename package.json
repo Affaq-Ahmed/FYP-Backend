@@ -8,6 +8,9 @@
   },
   "author": "Affaq",
   "license": "ISC",
+  "engines": {
+    "node": "v14.16.1"
+  },
   "dependencies": {
     "express": "^4.17.3",
     "express-async-errors": "^3.1.1",
