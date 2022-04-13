@@ -17,7 +17,16 @@ router.get("/", async (req, res) => {
 
 router.post("/createService", async (req, res) => {
 	const data = req.body;
+	const date = new Date();
+
 	console.log("Data: ", data);
+
+	const serviceData = {
+		description: data.description,
+		price: data.price,
+		createdOn: date,
+		category: data.category,
+	};
 
 	const result = await service.add(data);
 	console.log(result);
@@ -25,17 +34,14 @@ router.post("/createService", async (req, res) => {
 });
 
 router.get("/byId", async (req, res) => {
-	const snapshot = await user.get();
+	const resultService = await service.doc(req.body.sId).get();
 
-	var resultSerivce;
-	snapshot.forEach((doc) => {
-		console.log(doc.id, "=>", doc.data());
-		if (doc.id == req.body.Id) {
-			resultSerivce = doc.data();
-		}
-	});
-	console.log(resultSerivce);
-	res.send(resultSerivce);
+	if (!resultService.exists) {
+		res.send("Service Not Found");
+	} else {
+		console.log(resultService._fieldsProto);
+		res.send(resultService._fieldsProto);
+	}
 });
 
 module.exports = router;
