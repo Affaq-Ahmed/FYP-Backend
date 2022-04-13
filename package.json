@@ -9,7 +9,7 @@
   "author": "Affaq",
   "license": "ISC",
   "engines": {
-    "node": "v14.16.1"
+    "node": "14.16.1"
   },
   "dependencies": {
     "express": "^4.17.3",
