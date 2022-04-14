@@ -44,7 +44,7 @@ router.post("/createProfile", async (req, res) => {
 	}
 });
 
-router.get("/byUsername", async (req, res) => {
+router.post("/byUsername", async (req, res) => {
 	const result = await user.doc(req.body.username).get();
 	if (!result.exists) res.send("User Does not Exists.");
 	else {
