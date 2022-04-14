@@ -13,7 +13,7 @@ module.exports = function (app) {
 	app.use("/api/users", user);
 	app.use("/api/services", service);
 	app.use("/api/order", order);
-	app.use("/api/feedback", feedback);
+	//app.use("/api/feedback", feedback);
 	app.use("/api/category", category);
 
 	app.use(error);
