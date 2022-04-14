@@ -28,6 +28,8 @@ router.post("/createService", async (req, res) => {
 		price: data.price,
 		createdOn: date,
 		category: data.category,
+		sellerId: data.sellerId,
+		rating: 0,
 	};
 
 	const result = await service.add(serviceData);
@@ -51,10 +53,24 @@ router.get("/byId", async (req, res) => {
 	}
 });
 
+router.get("/bySeller", async (req, res) => {
+	const services = await service.where("category", "==", req.body.sellerId);
+	if (searchResult.empty) {
+		console.log("No result found.");
+		res.status(200).send("No doc by that filter.");
+	} else {
+		searchResult.forEach((doc) => {
+			console.log(doc.id, "=>", doc.data());
+			search.push(doc.data());
+		});
+		res.status(200).send(search);
+	}
+});
+
 router.get("/search", async (req, res) => {
-	const searchResult = await service.where('category', '==', req.body.category);
+	const searchResult = await service.where("category", "==", req.body.category);
 	const search = [];
-	if(searchResult.empty){
+	if (searchResult.empty) {
 		console.log("No result found.");
 		res.status(200).send("No doc by that filter.");
 	}
