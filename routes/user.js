@@ -16,7 +16,7 @@ router.get("/", async (req, res) => {
 });
 
 router.post("/createProfile", async (req, res) => {
-	const check = user.doc(req.body.uId);
+	const check = user.doc(req.body.uId).get();
 	if (check.exists) res.send("User Already Exists.");
 	else {
 		const data = req.body;
@@ -38,7 +38,7 @@ router.post("/createProfile", async (req, res) => {
 			services: []
 		};
 
-		const result = await user.doc(data.uID).set(userData);
+		const result = await user.doc(req.body.uId).set(userData);
 		console.log(result);
 		res.status(200).send(result);
 	}
