@@ -51,4 +51,18 @@ router.get("/byId", async (req, res) => {
 	}
 });
 
+router.get("/search", async (req, res) => {
+	const searchResult = await service.where('category', '==', req.body.category);
+	const search = [];
+	if(searchResult.empty){
+		console.log("No result found.");
+		res.status(200).send("No doc by that filter.");
+	}
+	searchResult.forEach((doc) => {
+		console.log(doc.id, "=>", doc.data());
+		search.push(doc.data());
+	});
+	res.status(200).send(search);
+});
+
 module.exports = router;
