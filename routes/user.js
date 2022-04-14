@@ -35,6 +35,7 @@ router.post("/createProfile", async (req, res) => {
 			//cnicFront: data.cnicFront,
 			//cnicBack: data.cnicBack,
 			createdOn: date,
+			services: []
 		};
 
 		const result = await user.doc(data.uID).set(userData);

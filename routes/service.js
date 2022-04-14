@@ -1,8 +1,10 @@
 const express = require("express");
+const { FieldValue } = require("firebase-admin/firestore");
 const router = express.Router();
 const { db } = require("../config/firebase");
 
 const service = db.collection("services");
+const user = db.collection("users");
 
 router.get("/", async (req, res) => {
 	const snapshot = await service.get();
@@ -28,13 +30,18 @@ router.post("/createService", async (req, res) => {
 		category: data.category,
 	};
 
-	const result = await service.add(data);
+	const result = await service.add(serviceData);
 	console.log(result);
-	res.send(result);
+	if (result) {
+		const userResult = user.doc(data.sellerId).update({
+			services: FieldValue.arrayUnion(result.id),
+		});
+	}
+	res.status(200).send(result);
 });
 
 router.get("/byId", async (req, res) => {
-	const resultService = await service.doc(req.body.sId).get();
+	const resultService = await service.doc(req.body.serviceId).get();
 
 	if (!resultService.exists) {
 		res.send("Service Not Found");
