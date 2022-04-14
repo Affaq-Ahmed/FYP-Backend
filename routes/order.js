@@ -45,3 +45,5 @@ router.post("/updateOrder", async (req, res) => {
 		});
 	}
 });
+
+module.exports = router;

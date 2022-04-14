@@ -14,3 +14,5 @@ router.get("/", async (req, res) => {
 	});
 	res.send(categories);
 });
+
+module.exports = router;
