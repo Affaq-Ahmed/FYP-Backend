@@ -47,7 +47,7 @@ router.post("/createProfile", async (req, res) => {
 
 router.post("/editProfile", async (req, res) => {
 	const check = user.doc(req.body.uId).get();
-	if (!check.exists) res.send("User Does not Exists.");
+	if (check.exists) res.status(200).send("User Does not Exists.");
 	else {
 		const data = req.body;
 		
