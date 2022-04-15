@@ -36,7 +36,8 @@ router.post("/createProfile", async (req, res) => {
 			//cnicFront: data.cnicFront,
 			//cnicBack: data.cnicBack,
 			createdOn: date,
-			services: []
+			services: [],
+			sellerLevel: "Beginner",
 		};
 
 		const result = await user.doc(req.body.uId).set(userData);
@@ -50,12 +51,44 @@ router.post("/editProfile", async (req, res) => {
 	if (check.exists) res.status(200).send("User Does not Exists.");
 	else {
 		const data = req.body;
-		
+
 		const updatedUser = await user.doc(data.uId).update({
 			firstName: data.firstName,
 			lastName: data.lastName,
 			address: data.address,
 			profileImage: data.profileImage,
+		});
+
+		console.log(updatedUser);
+		res.status(200).send(updatedUser);
+	}
+});
+
+router.post("/deActivateProfile", async (req, res) => {
+	const check = user.doc(req.body.uId).get();
+	if (check.exists) res.status(200).send("User Does not Exists.");
+	else {
+		const data = req.body;
+		if (data.status === "0") res.status(200).send("Profile Not Active Yet.");
+
+		const updatedUser = await user.doc(data.uId).update({
+			profileStatus: "2",
+		});
+
+		console.log(updatedUser);
+		res.status(200).send(updatedUser);
+	}
+});
+
+router.post("/activateProfile", async (req, res) => {
+	const check = user.doc(req.body.uId).get();
+	if (check.exists) res.status(200).send("User Does not Exists.");
+	else {
+		const data = req.body;
+		if (data.status === "0") res.status(200).send("Profile Not Active Yet.");
+
+		const updatedUser = await user.doc(data.uId).update({
+			profileStatus: "1",
 		});
 
 		console.log(updatedUser);

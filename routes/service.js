@@ -30,6 +30,7 @@ router.post("/createService", async (req, res) => {
 		category: data.category,
 		sellerId: data.sellerId,
 		rating: 0,
+		feedback: [],
 	};
 
 	const result = await service.add(serviceData);
