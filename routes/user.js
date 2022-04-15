@@ -59,7 +59,7 @@ router.post("/editProfile", async (req, res) => {
 		});
 
 		console.log(updatedUser);
-		res.status(200).send(result);
+		res.status(200).send(updatedUser);
 	}
 });
 
