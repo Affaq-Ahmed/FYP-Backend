@@ -42,7 +42,7 @@ router.post("/createService", async (req, res) => {
 	res.status(200).send(result);
 });
 
-router.get("/byId", async (req, res) => {
+router.post("/byId", async (req, res) => {
 	const resultService = await service.doc(req.body.serviceId).get();
 
 	if (!resultService.exists) {
@@ -53,7 +53,7 @@ router.get("/byId", async (req, res) => {
 	}
 });
 
-router.get("/bySeller", async (req, res) => {
+router.post("/bySeller", async (req, res) => {
 	const services = await service.where("category", "==", req.body.sellerId);
 	if (searchResult.empty) {
 		console.log("No result found.");

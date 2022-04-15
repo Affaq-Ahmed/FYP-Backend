@@ -44,6 +44,25 @@ router.post("/createProfile", async (req, res) => {
 	}
 });
 
+router.post("/editProfile", async (req, res) => {
+	const check = user.doc(req.body.uId).get();
+	if (!check.exists) res.send("User Does not Exists.");
+	else {
+		const data = req.body;
+		
+		const updatedUser = user.doc(data.uId).update({
+			firstName: data.firstName,
+			lastName: data.lastName,
+			username: data.username,
+			address: data.address,
+			profileImage: data.profileImage,
+		});
+
+		console.log(updatedUser);
+		res.status(200).send(result);
+	}
+});
+
 router.post("/byUsername", async (req, res) => {
 	const result = await user.doc(req.body.username).get();
 	if (!result.exists) res.send("User Does not Exists.");
