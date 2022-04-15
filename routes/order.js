@@ -40,7 +40,7 @@ router.post("/updateOrder", async (req, res) => {
 		res.send("Service Not Found.");
 	} else {
 		const data = req.body;
-		const resultOrder = order.doc(data.orderId).update({
+		const resultOrder = await order.doc(data.orderId).update({
 			status: data.status,
 		});
 	}

@@ -16,7 +16,7 @@ router.get("/", async (req, res) => {
 });
 
 router.post("/createProfile", async (req, res) => {
-	const check = user.doc(req.body.uId).get();
+	const check = await user.doc(req.body.uId).get();
 	if (check.exists) res.send("User Already Exists.");
 	else {
 		const data = req.body;
@@ -29,6 +29,7 @@ router.post("/createProfile", async (req, res) => {
 			dob: data.dob,
 			email: data.email,
 			address: data.address,
+			//phone: data.phone,
 			//cnic: data.cnic,
 			profileImage: data.profileImage,
 			profileStatus: "0",
@@ -50,10 +51,9 @@ router.post("/editProfile", async (req, res) => {
 	else {
 		const data = req.body;
 		
-		const updatedUser = user.doc(data.uId).update({
+		const updatedUser = await user.doc(data.uId).update({
 			firstName: data.firstName,
 			lastName: data.lastName,
-			username: data.username,
 			address: data.address,
 			profileImage: data.profileImage,
 		});
@@ -65,6 +65,15 @@ router.post("/editProfile", async (req, res) => {
 
 router.post("/byUsername", async (req, res) => {
 	const result = await user.doc(req.body.username).get();
+	if (!result.exists) res.send("User Does not Exists.");
+	else {
+		console.log(result._fieldsProto);
+		res.send(result._fieldsProto);
+	}
+});
+
+router.post("/byId", async (req, res) => {
+	const result = await user.doc(req.body.uId).get();
 	if (!result.exists) res.send("User Does not Exists.");
 	else {
 		console.log(result._fieldsProto);
