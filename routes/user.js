@@ -20,6 +20,7 @@ router.get("/", async (req, res) => {
 });
 
 router.post("/createProfile", async (req, res) => {
+	console.log(req);
 	try {
 		const check = await user.doc(req.body.uId).get();
 		if (check.exists) res.status(409).json("User Already Exists.");
@@ -52,6 +53,7 @@ router.post("/createProfile", async (req, res) => {
 			res.status(200).json({ message: "User Created Successfully." });
 		}
 	} catch (error) {
+		console.log(error.message);
 		res.status(500).json({ message: error.message });
 	}
 });
