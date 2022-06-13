@@ -40,12 +40,12 @@ router.post("/createProfile", async (req, res) => {
 			createdOn: date,
 			services: [],
 			sellerLevel: "Beginner",
-			preferance: data.preferance,
+			preference: data.preference,
 		};
 
 		const result = await user.doc(req.body.uId).set(userData);
 		console.log(result);
-		res.status(200).send(result);
+		res.status(200).send("User Created");
 	}
 });
 
