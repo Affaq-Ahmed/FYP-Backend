@@ -22,6 +22,10 @@ router.get("/", async (req, res) => {
 router.post("/createProfile", async (req, res) => {
 	const check = await user.doc(req.body.uId).get();
 	if (check.exists) res.status(409).json("User Already Exists.");
+
+	const checkCNIC = await user.where("cnic", "==", req.body.cnic).get();
+	if (!checkCNIC.empty) res.status(409).json("CNIC Already Exists.");
+	
 	else {
 		const data = req.body;
 		const date = new Date();
