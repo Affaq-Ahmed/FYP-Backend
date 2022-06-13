@@ -41,7 +41,19 @@ router.post("/createProfile", async (req, res) => {
 		};
 
 		const result = await User.doc(req.body.uId).set(userData);
-		const user = await User.doc(req.body.uId).get();
+		const user = {
+			address: response.data.address.stringValue,
+			dob: response.data.dob.stringValue,
+			firstName: response.data.firstName.stringValue,
+			lastName: response.data.lastName.stringValue,
+			profileImage: response.data.profileImage.stringValue,
+			phone: response.data.phone.stringValue,
+			username: response.data.username.stringValue,
+			cnic: response.data.cnic.stringValue,
+			profileStatus: response.data.profileStatus.stringValue,
+			sellerLevel: response.data.sellerLevel.stringValue,
+			services: response.data.services.arrayValue.values,
+		};
 		console.log(result.data());
 		res.status(200).send(user);
 	}
