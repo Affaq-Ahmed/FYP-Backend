@@ -21,7 +21,7 @@ router.get("/", async (req, res) => {
 
 router.post("/createProfile", async (req, res) => {
 	const check = await user.doc(req.body.uId).get();
-	if (check.exists) res.send("User Already Exists.");
+	if (check.exists) res.status(409).json("User Already Exists.");
 	else {
 		const data = req.body;
 		const date = new Date();
@@ -29,7 +29,6 @@ router.post("/createProfile", async (req, res) => {
 		var userData = {
 			firstName: data.firstName,
 			lastName: data.lastName,
-			username: data.username,
 			dob: data.dob,
 			email: data.email,
 			address: data.address,
@@ -37,11 +36,11 @@ router.post("/createProfile", async (req, res) => {
 			cnic: data.cnic,
 			profileImage: data.profileImage,
 			profileStatus: "0",
-			//cnicFront: data.cnicFront,
-			//cnicBack: data.cnicBack,
+			cnicPhoto: "",
 			createdOn: date,
 			services: [],
 			sellerLevel: "Beginner",
+			preferance: data.preferance,
 		};
 
 		const result = await user.doc(req.body.uId).set(userData);
@@ -69,6 +68,54 @@ router.post("/editProfile", async (req, res) => {
 		}
 	} catch (error) {
 		res.status(500).json({ message: error.message });
+	}
+});
+
+router.get("/:username", async (req, res) => {
+	try {
+		const result = await user.doc(req.params.username).get();
+		if (!result.exists) res.send("User Does not Exist.");
+		else {
+			const user = {
+				address: result._fieldsProto.address.stringValue,
+				dob: result._fieldsProto.dob.stringValue,
+				firstName: result._fieldsProto.firstName.stringValue,
+				lastName: result._fieldsProto.lastName.stringValue,
+				profileImage: result._fieldsProto.profileImage.stringValue,
+				phone: result._fieldsProto.phone.stringValue,
+				cnic: result._fieldsProto.cnic.stringValue,
+				email: result._fieldsProto.email.stringValue,
+				profileStatus: result._fieldsProto.profileStatus.stringValue,
+				createdOn: result._fieldsProto.createdOn.stringValue,
+				// services: result._fieldsProto.services.arrayValue.values,
+				services: result._fieldsProto.services.arrayValue.values.map(
+					(service) => {
+						return service.stringValue;
+					}
+				),
+				sellerLevel: result._fieldsProto.sellerLevel.stringValue,
+				preference: result._fieldsProto.preference.mapValue.fields,
+			};
+			console.log(user);
+			res.status(200).json({ user });
+		}
+	} catch (error) {
+		console.log(error);
+		res.status(500).json({ error: error.message });
+	}
+});
+
+router.get("/byId/:id", async (req, res) => {
+	try {
+		const result = await user.doc(req.params.id).get();
+		if (!result.exists) res.send("User Does not Exists.");
+		else {
+			console.log(result._fieldsProto);
+			res.send(result._fieldsProto);
+		}
+	} catch (error) {
+		console.log(error);
+		res.status(500).json({ error: error.message });
 	}
 });
 
@@ -112,45 +159,21 @@ router.post("/activateProfile", async (req, res) => {
 	}
 });
 
-router.get("/:username", async (req, res) => {
+//CHANGE PREFERANCE
+router.post("/changePreferance", async (req, res) => {
 	try {
-		const result = await user.doc(req.params.username).get();
-		if (!result.exists) res.send("User Does not Exist.");
+		const check = user.doc(req.body.uId).get();
+		if (check.exists) res.status(200).send("User Does not Exists.");
 		else {
-			const user = {
-				address: result._fieldsProto.address.stringValue,
-				dob: result._fieldsProto.dob.stringValue,
-				firstName: result._fieldsProto.firstName.stringValue,
-				lastName: result._fieldsProto.lastName.stringValue,
-				profileImage: result._fieldsProto.profileImage.stringValue,
-				phone: result._fieldsProto.phone.stringValue,
-				username: result._fieldsProto.username.stringValue,
-				cnic: result._fieldsProto.cnic.stringValue,
-				email: result._fieldsProto.email.stringValue,
-				profileStatus: result._fieldsProto.profileStatus.stringValue,
-				createdOn: result._fieldsProto.createdOn.stringValue,
-				services: result._fieldsProto.services.arrayValue.values,
-				sellerLevel: result._fieldsProto.sellerLevel.stringValue,
-			};
-			res.status(200).json({ user });
+			const data = req.body;
+			const updatedUser = await user.doc(data.uId).update({
+				preferance: data.preferance,
+			});
+			console.log(updatedUser);
+			res.status(200).send(updatedUser);
 		}
 	} catch (error) {
-		console.log(error);
-		res.status(500).json({ error: error.message });
-	}
-});
-
-router.post("/byId", async (req, res) => {
-	try {
-		const result = await user.doc(req.body.uId).get();
-		if (!result.exists) res.send("User Does not Exists.");
-		else {
-			console.log(result._fieldsProto);
-			res.send(result._fieldsProto);
-		}
-	} catch (error) {
-		console.log(error);
-		res.status(500).json({ error: error.message });
+		res.status(500).json({ message: error.message });
 	}
 });
 
