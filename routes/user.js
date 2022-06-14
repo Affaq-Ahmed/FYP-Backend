@@ -72,7 +72,9 @@ router.post("/editProfile", async (req, res) => {
 				dob: data.dob,
 				address: data.address,
 				phone: data.phone,
-				profileImage: data.profileImage,
+				profileImage: data.profileImage
+					? data.profileImage
+					: (await check).data().profileImage,
 			});
 
 			console.log(updatedUser);
