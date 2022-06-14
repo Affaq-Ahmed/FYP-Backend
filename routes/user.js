@@ -62,7 +62,7 @@ router.post("/createProfile", async (req, res) => {
 router.post("/editProfile", async (req, res) => {
 	try {
 		const check = user.doc(req.body.uId).get();
-		if (check.exists) res.status(200).send("User Does not Exists.");
+		if (!check.exists) res.status(409).json("User Not Found.");
 		else {
 			const data = req.body;
 
@@ -177,6 +177,7 @@ router.post("/changePreference", async (req, res) => {
 		if (check.exists) res.status(200).send("User Does not Exists.");
 		else {
 			const data = req.body;
+			// console.log(data);
 			const updatedUser = await user.doc(data.uId).update({
 				preference: {
 					language: data.preference.language,
@@ -187,6 +188,7 @@ router.post("/changePreference", async (req, res) => {
 			res.status(200).send(updatedUser);
 		}
 	} catch (error) {
+		console.log(error.message);
 		res.status(500).json({ message: error.message });
 	}
 });
