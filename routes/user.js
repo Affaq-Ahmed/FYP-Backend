@@ -20,13 +20,16 @@ router.get("/", async (req, res) => {
 });
 
 router.post("/createProfile", async (req, res) => {
-	const check = await user.doc(req.body.uId).get();
-	if (check.exists) res.status(409).json("User Already Exists.");
+	console.log(req.body);
+	try {
+		const check = await user.doc(req.body.uId).get();
+		if (check.exists) res.status(409).json("User Already Exists.");
+		console.log(check);
 
-	const checkCNIC = await user.where("cnic", "==", req.body.cnic).get();
-	if (!checkCNIC.empty) res.status(409).json("CNIC Already Exists.");
-	
-	else {
+		const checkCNIC = await user.where("cnic", "==", req.body.cnic).get();
+		if (!checkCNIC.empty) res.status(409).json("CNIC Already Exists.");
+		console.log(checkCNIC);
+
 		const data = req.body;
 		const date = new Date();
 
@@ -47,9 +50,12 @@ router.post("/createProfile", async (req, res) => {
 			preference: data.preference,
 		};
 
-		const result = await user.doc(req.body.uId).set(userData);
+		const result = await user.doc(data.uId).set(userData);
 		console.log(result);
-		res.status(200).send("User Created");
+		res.status(200).json({ message: "User Created Successfully." });
+	} catch (error) {
+		console.log(error.message);
+		res.status(500).json({ message: error.message });
 	}
 });
 
