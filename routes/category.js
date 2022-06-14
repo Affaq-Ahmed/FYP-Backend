@@ -15,13 +15,7 @@ router.get("/", async (req, res) => {
 		console.log(doc.id, "=>", doc.data());
 		categories.push(category);
 	});
-	res.send(categories);
+	res.status(200).json(categories);
 });
-
-// //CREATE CATEGORY
-// router.post("/createCategory", async (req, res) => {
-// 	const data = req.body;
-// 	const date = new Date();
-// });
 
 module.exports = router;

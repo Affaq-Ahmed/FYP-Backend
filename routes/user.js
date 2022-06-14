@@ -22,37 +22,38 @@ router.get("/", async (req, res) => {
 router.post("/createProfile", async (req, res) => {
 	console.log(req.body);
 	try {
+		// const checkCNIC = await user.where("cnic", "==", req.body.cnic).get();
+		// if (checkCNIC) res.status(409).send("CNIC Already Exists.");
+		// console.log(checkCNIC);
+
 		const check = await user.doc(req.body.uId).get();
-		if (check) res.status(409).json("User Already Exists.");
-		console.log(check);
+		if (check.exists) {
+			res.status(409).json("User already exists");
+		} else {
+			const data = req.body;
+			const date = new Date();
 
-		const checkCNIC = await user.where("cnic", "==", req.body.cnic).get();
-		if (!checkCNIC) res.status(409).json("CNIC Already Exists.");
-		console.log(checkCNIC);
+			var userData = {
+				firstName: data.firstName,
+				lastName: data.lastName,
+				dob: data.dob,
+				email: data.email,
+				address: data.address,
+				phone: data.phone,
+				cnic: data.cnic,
+				profileImage: data.profileImage,
+				profileStatus: "0", //0: not verified, 1: verified ,2: deleted
+				cnicPhoto: "",
+				createdOn: date,
+				services: [],
+				sellerLevel: "Beginner",
+				preference: data.preference,
+			};
 
-		const data = req.body;
-		const date = new Date();
-
-		var userData = {
-			firstName: data.firstName,
-			lastName: data.lastName,
-			dob: data.dob,
-			email: data.email,
-			address: data.address,
-			phone: data.phone,
-			cnic: data.cnic,
-			profileImage: data.profileImage,
-			profileStatus: "0",
-			cnicPhoto: "",
-			createdOn: date,
-			services: [],
-			sellerLevel: "Beginner",
-			preference: data.preference,
-		};
-
-		const result = await user.doc(data.uId).set(userData);
-		console.log(result);
-		res.status(200).json({ message: "User Created Successfully." });
+			const result = await user.doc(data.uId).set(userData);
+			console.log(result);
+			res.status(201).json({ message: "User Created Successfully." });
+		}
 	} catch (error) {
 		console.log(error.message);
 		res.status(500).json({ message: error.message });
@@ -66,7 +67,12 @@ router.post("/editProfile", async (req, res) => {
 		else {
 			const data = req.body;
 			const updatedUser = await user.doc(data.uId).update({
-				data,
+				firstName: data.firstName,
+				lastName: data.lastName,
+				dob: data.dob,
+				address: data.address,
+				phone: data.phone,
+				profileImage: data.profileImage,
 			});
 
 			console.log(updatedUser);
@@ -93,7 +99,6 @@ router.get("/:username", async (req, res) => {
 				email: result._fieldsProto.email.stringValue,
 				profileStatus: result._fieldsProto.profileStatus.stringValue,
 				createdOn: result._fieldsProto.createdOn.stringValue,
-				// services: result._fieldsProto.services.arrayValue.values,
 				services: result._fieldsProto.services.arrayValue.values.map(
 					(service) => {
 						return service.stringValue;
