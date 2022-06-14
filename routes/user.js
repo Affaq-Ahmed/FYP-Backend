@@ -42,7 +42,7 @@ router.post("/createProfile", async (req, res) => {
 				phone: data.phone,
 				cnic: data.cnic,
 				profileImage: data.profileImage,
-				profileStatus: "0",
+				profileStatus: "0", //0: not verified, 1: verified ,2: deleted
 				cnicPhoto: "",
 				createdOn: date,
 				services: [],
@@ -99,7 +99,6 @@ router.get("/:username", async (req, res) => {
 				email: result._fieldsProto.email.stringValue,
 				profileStatus: result._fieldsProto.profileStatus.stringValue,
 				createdOn: result._fieldsProto.createdOn.stringValue,
-				// services: result._fieldsProto.services.arrayValue.values,
 				services: result._fieldsProto.services.arrayValue.values.map(
 					(service) => {
 						return service.stringValue;
