@@ -32,6 +32,7 @@ router.post("/createService", async (req, res) => {
 		rating: 0,
 		feedback: [],
 		orders: [],
+		location: data.location,
 	};
 
 	const result = await service.add(serviceData);
@@ -74,13 +75,16 @@ router.get("/search", async (req, res) => {
 	const search = [];
 	if (searchResult.empty) {
 		console.log("No result found.");
-		res.status(200).send("No doc by that filter.");
+		res.status(200).send("No Service by that filter.");
+	} else {
+		searchResult.forEach((doc) => {
+			const data = doc.data();
+			data.id = doc.id;
+			console.log(doc.id, "=>", doc.data());
+			search.push(data);
+		});
+		res.status(200).json(search);
 	}
-	searchResult.forEach((doc) => {
-		console.log(doc.id, "=>", doc.data());
-		search.push(doc.data());
-	});
-	res.status(200).send(search);
 });
 
 module.exports = router;
