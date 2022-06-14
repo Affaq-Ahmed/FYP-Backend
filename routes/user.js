@@ -171,7 +171,7 @@ router.post("/activateProfile", async (req, res) => {
 });
 
 //CHANGE PREFERANCE
-router.post("/changePreferance", async (req, res) => {
+router.post("/changePreference", async (req, res) => {
 	try {
 		const check = user.doc(req.body.uId).get();
 		if (check.exists) res.status(200).send("User Does not Exists.");
