@@ -78,8 +78,8 @@ router.get("/bySellerId/:sellerId", async (req, res) => {
 	}
 });
 
-router.get("/search", async (req, res) => {
-	const searchResult = await service.where("category", "==", req.body.category);
+router.get("/search/:categoryId", async (req, res) => {
+	const searchResult = await service.where("category", "==", req.params.categoryId);
 	const search = [];
 	if (searchResult.empty) {
 		console.log("No result found.");
