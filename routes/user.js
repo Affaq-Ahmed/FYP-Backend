@@ -30,8 +30,6 @@ router.post("/createProfile", async (req, res) => {
 		if (check.exists) {
 			res.status(409).json("User already exists");
 		} else {
-			console.log(check);
-
 			const data = req.body;
 			const date = new Date();
 
