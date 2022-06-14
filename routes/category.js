@@ -10,8 +10,10 @@ router.get("/", async (req, res) => {
 
 	var categories = [];
 	snapshot.forEach((doc) => {
+		var category = doc.data();
+		category.id = parseInt(doc.id);
 		console.log(doc.id, "=>", doc.data());
-		categories.push(doc);
+		categories.push(category);
 	});
 	res.send(categories);
 });

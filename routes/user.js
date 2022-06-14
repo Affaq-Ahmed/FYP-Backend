@@ -23,11 +23,11 @@ router.post("/createProfile", async (req, res) => {
 	console.log(req.body);
 	try {
 		const check = await user.doc(req.body.uId).get();
-		if (check.exists) res.status(409).json("User Already Exists.");
+		if (check) res.status(409).json("User Already Exists.");
 		console.log(check);
 
 		const checkCNIC = await user.where("cnic", "==", req.body.cnic).get();
-		if (!checkCNIC.empty) res.status(409).json("CNIC Already Exists.");
+		if (!checkCNIC) res.status(409).json("CNIC Already Exists.");
 		console.log(checkCNIC);
 
 		const data = req.body;
@@ -62,15 +62,11 @@ router.post("/createProfile", async (req, res) => {
 router.post("/editProfile", async (req, res) => {
 	try {
 		const check = user.doc(req.body.uId).get();
-		if (check.exists) res.status(200).send("User Does not Exists.");
+		if (!check) res.status(409).json("User Not Found.");
 		else {
 			const data = req.body;
-
 			const updatedUser = await user.doc(data.uId).update({
-				firstName: data.firstName,
-				lastName: data.lastName,
-				address: data.address,
-				profileImage: data.profileImage,
+				data,
 			});
 
 			console.log(updatedUser);
@@ -170,19 +166,24 @@ router.post("/activateProfile", async (req, res) => {
 });
 
 //CHANGE PREFERANCE
-router.post("/changePreferance", async (req, res) => {
+router.post("/changePreference", async (req, res) => {
 	try {
 		const check = user.doc(req.body.uId).get();
 		if (check.exists) res.status(200).send("User Does not Exists.");
 		else {
 			const data = req.body;
+			// console.log(data);
 			const updatedUser = await user.doc(data.uId).update({
-				preferance: data.preferance,
+				preference: {
+					language: data.preference.language.toString(),
+					userMode: data.preference.userMode.toString(),
+				},
 			});
 			console.log(updatedUser);
 			res.status(200).send(updatedUser);
 		}
 	} catch (error) {
+		console.log(error.message);
 		res.status(500).json({ message: error.message });
 	}
 });
