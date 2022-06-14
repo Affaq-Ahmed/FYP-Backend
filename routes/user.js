@@ -71,6 +71,7 @@ router.post("/editProfile", async (req, res) => {
 				lastName: data.lastName,
 				address: data.address,
 				profileImage: data.profileImage,
+				phone: data.phone,
 			});
 
 			console.log(updatedUser);
