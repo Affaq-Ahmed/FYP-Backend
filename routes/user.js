@@ -178,7 +178,10 @@ router.post("/changePreference", async (req, res) => {
 		else {
 			const data = req.body;
 			const updatedUser = await user.doc(data.uId).update({
-				preference: data.preference,
+				preference: {
+					language: data.preference.language,
+					userMode: data.preference.userMode,
+				},
 			});
 			console.log(updatedUser);
 			res.status(200).send(updatedUser);
