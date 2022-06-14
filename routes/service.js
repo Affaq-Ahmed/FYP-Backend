@@ -56,17 +56,25 @@ router.post("/byId", async (req, res) => {
 	}
 });
 
-router.post("/bySeller", async (req, res) => {
-	const services = await service.where("category", "==", req.body.sellerId);
-	if (searchResult.empty) {
-		console.log("No result found.");
-		res.status(200).send("No doc by that filter.");
-	} else {
-		searchResult.forEach((doc) => {
+//GET SERVICES BY SELLER ID
+router.get("/bySellerId/:sellerId", async (req, res) => {
+	try {
+		const snapshot = await service
+			.where("sellerId", "==", req.params.sellerId)
+			.get();
+		const services = [];
+
+		snapshot.forEach((doc) => {
+			const data = doc.data();
+			data.id = doc.id;
 			console.log(doc.id, "=>", doc.data());
-			search.push(doc.data());
+			services.push(data);
 		});
-		res.status(200).send(search);
+
+		res.status(200).json(services);
+	} catch (error) {
+		console.log(error);
+		res.status(500).send(error);
 	}
 });
 
