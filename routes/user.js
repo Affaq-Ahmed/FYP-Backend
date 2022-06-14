@@ -22,37 +22,40 @@ router.get("/", async (req, res) => {
 router.post("/createProfile", async (req, res) => {
 	console.log(req.body);
 	try {
+		// const checkCNIC = await user.where("cnic", "==", req.body.cnic).get();
+		// if (checkCNIC) res.status(409).send("CNIC Already Exists.");
+		// console.log(checkCNIC);
+
 		const check = await user.doc(req.body.uId).get();
-		if (check) res.status(409).json("User Already Exists.");
-		console.log(check);
+		if (check.exists) {
+			res.status(409).json("User already exists");
+		} else {
+			console.log(check);
 
-		const checkCNIC = await user.where("cnic", "==", req.body.cnic).get();
-		if (!checkCNIC) res.status(409).json("CNIC Already Exists.");
-		console.log(checkCNIC);
+			const data = req.body;
+			const date = new Date();
 
-		const data = req.body;
-		const date = new Date();
+			var userData = {
+				firstName: data.firstName,
+				lastName: data.lastName,
+				dob: data.dob,
+				email: data.email,
+				address: data.address,
+				phone: data.phone,
+				cnic: data.cnic,
+				profileImage: data.profileImage,
+				profileStatus: "0",
+				cnicPhoto: "",
+				createdOn: date,
+				services: [],
+				sellerLevel: "Beginner",
+				preference: data.preference,
+			};
 
-		var userData = {
-			firstName: data.firstName,
-			lastName: data.lastName,
-			dob: data.dob,
-			email: data.email,
-			address: data.address,
-			phone: data.phone,
-			cnic: data.cnic,
-			profileImage: data.profileImage,
-			profileStatus: "0",
-			cnicPhoto: "",
-			createdOn: date,
-			services: [],
-			sellerLevel: "Beginner",
-			preference: data.preference,
-		};
-
-		const result = await user.doc(data.uId).set(userData);
-		console.log(result);
-		res.status(200).json({ message: "User Created Successfully." });
+			const result = await user.doc(data.uId).set(userData);
+			console.log(result);
+			res.status(201).json({ message: "User Created Successfully." });
+		}
 	} catch (error) {
 		console.log(error.message);
 		res.status(500).json({ message: error.message });
