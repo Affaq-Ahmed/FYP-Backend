@@ -66,7 +66,12 @@ router.post("/editProfile", async (req, res) => {
 		else {
 			const data = req.body;
 			const updatedUser = await user.doc(data.uId).update({
-				data,
+				firstName: data.firstName,
+				lastName: data.lastName,
+				dob: data.dob,
+				address: data.address,
+				phone: data.phone,
+				profileImage: data.profileImage,
 			});
 
 			console.log(updatedUser);
