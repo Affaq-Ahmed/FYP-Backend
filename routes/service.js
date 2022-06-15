@@ -100,6 +100,13 @@ router.get("/bySellerId/:sellerId", async (req, res) => {
 	}
 });
 
+const getSeller = async (sellerId) => {
+	const snapshot = await user.doc(sellerId).get();
+	const data = snapshot.data();
+	data.id = snapshot.id;
+	return data;
+};
+
 router.get("/search/:categoryId", async (req, res) => {
 	try {
 		const { longitude, latitude, distance, maxPrice, minRating, uId } =
@@ -118,6 +125,7 @@ router.get("/search/:categoryId", async (req, res) => {
 			searchResult.forEach((doc) => {
 				const data = doc.data();
 				data.id = doc.id;
+
 				console.log(doc.id, "=>", doc.data());
 				if (
 					getDistance(
@@ -126,12 +134,13 @@ router.get("/search/:categoryId", async (req, res) => {
 						data.location.latitude,
 						data.location.longitude
 					) <= distance &&
-					data.price <= maxPrice &&
+					data.price <= parseInt(maxPrice) &&
 					data.rating >= minRating &&
 					data.sellerId !== uId
 				)
 					search.push(data);
 			});
+
 			res.status(200).json(search);
 		}
 	} catch (error) {
