@@ -46,8 +46,8 @@ router.post("/createService", async (req, res) => {
 	res.status(200).send(result);
 });
 
-router.post("/byId", async (req, res) => {
-	const resultService = await service.doc(req.body.serviceId).get();
+router.get("/byId/:id", async (req, res) => {
+	const resultService = await service.doc(req.params.id).get();
 
 	if (!resultService.exists) {
 		res.send("Service Not Found");
