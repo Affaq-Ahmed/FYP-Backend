@@ -80,33 +80,40 @@ router.get("/bySellerId/:sellerId", async (req, res) => {
 });
 
 router.get("/search/:categoryId", async (req, res) => {
-	const { location, distance, maxPrice, minRating } = req.query;
-	const { categoryId } = req.params;
+	try {
+		const { location, distance, maxPrice, minRating } = req.query;
+		const { categoryId } = req.params;
 
-	const searchResult = await service.where("category", "==", parseInt(categoryId)).get();
-	console.log(searchResult);
-	const search = [];
-	if (!searchResult) {
-		console.log("No result found.");
-		res.status(200).send("No Service by that filter.");
-	} else {
-		searchResult.forEach((doc) => {
-			const data = doc.data();
-			data.id = doc.id;
-			console.log(doc.id, "=>", doc.data());
-			if (
-				getDistance(
-					location.latitude,
-					location.longitude,
-					data.location.latitude,
-					data.location.longitude
-				) <= distance &&
-				data.price <= maxPrice &&
-				data.rating >= minRating
-			)
-			search.push(data);
-		});
-		res.status(200).json(search);
+		const searchResult = await service
+			.where("category", "==", parseInt(categoryId))
+			.get();
+		console.log(searchResult);
+		const search = [];
+		if (!searchResult) {
+			console.log("No result found.");
+			res.status(200).send("No Service by that filter.");
+		} else {
+			searchResult.forEach((doc) => {
+				const data = doc.data();
+				data.id = doc.id;
+				console.log(doc.id, "=>", doc.data());
+				if (
+					getDistance(
+						location.latitude,
+						location.longitude,
+						data.location.latitude,
+						data.location.longitude
+					) <= distance &&
+					data.price <= maxPrice &&
+					data.rating >= minRating
+				)
+					search.push(data);
+			});
+			res.status(200).json(search);
+		}
+	} catch (error) {
+		console.log(error);
+		res.status(500).send(error);
 	}
 });
 
