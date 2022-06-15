@@ -62,10 +62,12 @@ router.post("/createProfile", async (req, res) => {
 
 router.post("/editProfile", async (req, res) => {
 	try {
-		const check = user.doc(req.body.uId).get();
+		const check = await user.doc(req.body.uId).get();
 		if (!check) res.status(409).json("User Not Found.");
 		else {
+			console.log(check);
 			const data = req.body;
+			console.log(data);
 			const updatedUser = await user.doc(data.uId).update({
 				firstName: data.firstName,
 				lastName: data.lastName,
@@ -74,7 +76,7 @@ router.post("/editProfile", async (req, res) => {
 				phone: data.phone,
 				profileImage: data.profileImage
 					? data.profileImage
-					: (await check).data().profileImage,
+					: check.data().profileImage,
 			});
 
 			console.log(updatedUser);
