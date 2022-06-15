@@ -2,6 +2,7 @@ const express = require("express");
 const { FieldValue } = require("firebase-admin/firestore");
 const router = express.Router();
 const { db } = require("../config/firebase");
+const { getDistance } = require("../config/firebase");
 
 const service = db.collection("services");
 const user = db.collection("users");
@@ -79,9 +80,13 @@ router.get("/bySellerId/:sellerId", async (req, res) => {
 });
 
 router.get("/search/:categoryId", async (req, res) => {
-	const searchResult = await service.where("category", "==", req.params.categoryId);
+	const { location, distance, maxPrice, minRating } = req.query;
+	const { categoryId } = req.params;
+
+	const searchResult = await service.where("category", "==", parseInt(categoryId)).get();
+	console.log(searchResult);
 	const search = [];
-	if (searchResult.empty) {
+	if (!searchResult) {
 		console.log("No result found.");
 		res.status(200).send("No Service by that filter.");
 	} else {
@@ -89,6 +94,16 @@ router.get("/search/:categoryId", async (req, res) => {
 			const data = doc.data();
 			data.id = doc.id;
 			console.log(doc.id, "=>", doc.data());
+			if (
+				getDistance(
+					location.latitude,
+					location.longitude,
+					data.location.latitude,
+					data.location.longitude
+				) <= distance &&
+				data.price <= maxPrice &&
+				data.rating >= minRating
+			)
 			search.push(data);
 		});
 		res.status(200).json(search);
