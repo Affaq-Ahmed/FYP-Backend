@@ -81,7 +81,7 @@ router.get("/bySellerId/:sellerId", async (req, res) => {
 
 router.get("/search/:categoryId", async (req, res) => {
 	try {
-		const { location, distance, maxPrice, minRating } = req.query;
+		const { longitude, latitude, distance, maxPrice, minRating } = req.query;
 		const { categoryId } = req.params;
 
 		const searchResult = await service
@@ -99,8 +99,8 @@ router.get("/search/:categoryId", async (req, res) => {
 				console.log(doc.id, "=>", doc.data());
 				if (
 					getDistance(
-						location.latitude,
-						location.longitude,
+						latitude,
+						longitude,
 						data.location.latitude,
 						data.location.longitude
 					) <= distance &&
