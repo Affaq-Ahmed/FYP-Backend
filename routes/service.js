@@ -135,7 +135,7 @@ router.get("/search/:categoryId", async (req, res) => {
 						data.location.longitude
 					) <= distance &&
 					data.price <= parseInt(maxPrice) &&
-					data.rating >= minRating &&
+					data.rating >= parseInt(minRating) &&
 					data.sellerId !== uId
 				)
 					search.push(data);
