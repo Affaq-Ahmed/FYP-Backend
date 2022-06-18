@@ -118,6 +118,32 @@ router.get("/acceptedOrders/:id", async (req, res) => {
 	}
 });
 
+//GET ACCEPTED ORDERS BY BUYER ID
+router.get("/acceptedOrdersClient/:id", async (req, res) => {
+	try {
+		const result = await order
+			.where("buyerId", "==", req.params.id)
+			.where("status", "==", "1")
+			.get();
+
+		if (result.empty) {
+			res.status(200).send([]);
+		} else {
+			const orders = [];
+			result.forEach((doc) => {
+				orders.push({
+					id: doc.id,
+					...doc.data(),
+				});
+			});
+			res.status(200).json(orders);
+		}
+	} catch (error) {
+		console.log(error);
+		res.status(500).send(error);
+	}
+});
+
 //GET COMPLETED ORDERS BY SELLER ID
 router.get("/completedOrders/:id", async (req, res) => {
 	try {
@@ -144,11 +170,63 @@ router.get("/completedOrders/:id", async (req, res) => {
 	}
 });
 
+//GET COMPLETED ORDERS BY BUYER ID
+router.get("/completedOrders/:id", async (req, res) => {
+	try {
+		const result = await order
+			.where("buyerId", "==", req.params.id)
+			.where("status", "==", "3")
+			.get();
+
+		if (result.empty) {
+			res.status(200).send([]);
+		} else {
+			const orders = [];
+			result.forEach((doc) => {
+				orders.push({
+					id: doc.id,
+					...doc.data(),
+				});
+			});
+			res.status(200).json(orders);
+		}
+	} catch (error) {
+		console.log(error);
+		res.status(500).send(error);
+	}
+});
+
 //GET PENDING ORDERS BY SELLER ID
 router.get("/pendingOrders/:id", async (req, res) => {
 	try {
 		const result = await order
 			.where("sellerId", "==", req.params.id)
+			.where("status", "==", "0")
+			.get();
+
+		if (result.empty) {
+			res.status(200).send([]);
+		} else {
+			const orders = [];
+			result.forEach((doc) => {
+				orders.push({
+					id: doc.id,
+					...doc.data(),
+				});
+			});
+			res.status(200).json(orders);
+		}
+	} catch (error) {
+		console.log(error);
+		res.status(500).send(error);
+	}
+});
+
+//GET PENDING ORDERS BY BUYER ID
+router.get("/pendingOrders/:id", async (req, res) => {
+	try {
+		const result = await order
+			.where("buyerId", "==", req.params.id)
 			.where("status", "==", "0")
 			.get();
 
