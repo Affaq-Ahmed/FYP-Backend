@@ -3,6 +3,7 @@ const router = express.Router();
 const { db } = require("../config/firebase");
 
 const order = db.collection("orders");
+const service = db.collection("services");
 
 //CREATE ORDER
 router.post("/createOrder", async (req, res) => {
@@ -33,6 +34,22 @@ router.post("/createOrder", async (req, res) => {
 			const result = await order.add(orderData);
 			console.log(result);
 			res.status(201).json("Order Created.");
+		}
+	} catch (error) {
+		console.log(error);
+		res.status(500).send(error);
+	}
+});
+
+//ACCEPT ORDER
+router.post("/acceptOrder", async (req, res) => {
+	try {
+		const resultOrder = await order.doc(req.body.orderId).get();
+
+		if (!resultOrder.exists) {
+			res.send("Order Not Found.");
+		} else {
+			const data = req.body;
 		}
 	} catch (error) {
 		console.log(error);
