@@ -100,13 +100,6 @@ router.get("/bySellerId/:sellerId", async (req, res) => {
 	}
 });
 
-const getSeller = async (sellerId) => {
-	const snapshot = await user.doc(sellerId).get();
-	const data = snapshot.data();
-	data.id = snapshot.id;
-	return data;
-};
-
 router.get("/search/:categoryId", async (req, res) => {
 	try {
 		const { longitude, latitude, distance, maxPrice, minRating, uId } =
@@ -143,6 +136,35 @@ router.get("/search/:categoryId", async (req, res) => {
 
 			res.status(200).json(search);
 		}
+	} catch (error) {
+		console.log(error);
+		res.status(500).send(error);
+	}
+});
+
+//MODIFY SERVICE
+router.put("/modify/:id", async (req, res) => {
+	const data = req.body;
+	try {
+		const result = await service.doc(req.params.id).update({
+			description: data.description,
+			price: data.price,
+			location: data.location,
+		});
+		console.log(result);
+		res.status(200).send("Service Updated Successfully");
+	} catch (error) {
+		console.log(error);
+		res.status(500).send(error);
+	}
+});
+
+//DELETE SERVICE
+router.delete("/delete/:id", async (req, res) => {
+	try {
+		const result = await service.doc(req.params.id).delete();
+		console.log(result);
+		res.status(200).send("Service Deleted Successfully");
 	} catch (error) {
 		console.log(error);
 		res.status(500).send(error);
