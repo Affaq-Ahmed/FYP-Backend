@@ -29,7 +29,7 @@ router.post("/createOrder", async (req, res) => {
 				sellerId: data.sellerId,
 				location: data.location,
 				category: data.category,
-				status: "0", //0 = pending, 1 = accepted, 2 = rejected, 3 = completed, 4 = cancelled
+				status: "0", //0 = pending, 1 = accepted, 2 = rejected, 3 = completed, 4 = cancelled by buyer, 5 = cancelled by seller
 			};
 
 			const result = await order.add(orderData);
