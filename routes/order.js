@@ -171,7 +171,7 @@ router.get("/completedOrders/:id", async (req, res) => {
 });
 
 //GET COMPLETED ORDERS BY BUYER ID
-router.get("/completedOrders/:id", async (req, res) => {
+router.get("/completedOrdersClient/:id", async (req, res) => {
 	try {
 		const result = await order
 			.where("buyerId", "==", req.params.id)
@@ -223,7 +223,7 @@ router.get("/pendingOrders/:id", async (req, res) => {
 });
 
 //GET PENDING ORDERS BY BUYER ID
-router.get("/pendingOrders/:id", async (req, res) => {
+router.get("/pendingOrdersClient/:id", async (req, res) => {
 	try {
 		const result = await order
 			.where("buyerId", "==", req.params.id)
