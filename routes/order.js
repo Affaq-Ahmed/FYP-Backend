@@ -94,7 +94,23 @@ router.put("/rejectOrder", async (req, res) => {
 //GET ACCEPTED ORDERS BY SELLER ID
 router.get("/acceptedOrders", async (req, res) => {
 	try {
-		const result = await order.where("sellerId", "==", req.query.sellerId & "status",).get();
+		const result = await order
+			.where("sellerId", "==", req.query.sellerId)
+			.where("status", "==", "1")
+			.get();
+
+		if (result.empty) {
+			res.status(404).send("No Orders Found.");
+		} else {
+			const orders = [];
+			result.forEach((doc) => {
+				orders.push({
+					id: doc.id,
+					...doc.data(),
+				});
+			});
+			res.status(200).json(orders);
+		}
 	} catch (error) {
 		console.log(error);
 		res.status(500).send(error);
