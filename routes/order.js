@@ -4,6 +4,7 @@ const { db } = require("../config/firebase");
 
 const order = db.collection("orders");
 
+//CREATE ORDER
 router.post("/createOrder", async (req, res) => {
 	try {
 		const resultService = await service.doc(req.body.serviceId).get();
@@ -24,7 +25,8 @@ router.post("/createOrder", async (req, res) => {
 				endDate: data.endDate,
 				serviceId: data.serviceId,
 				buyerId: data.buyerId,
-				status: "pending",
+				sellerId: data.sellerId,
+				status: "0", //0 = pending, 1 = accepted, 2 = rejected, 3 = completed, 4 = cancelled
 			};
 
 			const result = await order.add(orderData);
@@ -34,20 +36,6 @@ router.post("/createOrder", async (req, res) => {
 	} catch (error) {
 		console.log(error);
 		res.status(500).send(error);
-	}
-});
-
-router.post("/updateOrder", async (req, res) => {
-	const data = req.body;
-	const resultOrder = await service.doc(req.body.orderId).get();
-
-	if (!resultService.exists) {
-		res.send("Service Not Found.");
-	} else {
-		const data = req.body;
-		const resultOrder = await order.doc(data.orderId).update({
-			status: data.status,
-		});
 	}
 });
 
