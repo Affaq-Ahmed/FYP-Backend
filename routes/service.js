@@ -143,7 +143,7 @@ router.get("/search/:categoryId", async (req, res) => {
 });
 
 //MODIFY SERVICE
-router.put("/modify/:id", async (req, res) => {
+router.put("/modifyService/:id", async (req, res) => {
 	const data = req.body;
 	try {
 		const result = await service.doc(req.params.id).update({
