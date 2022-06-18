@@ -59,7 +59,7 @@ router.put("/acceptOrder", async (req, res) => {
 				});
 				res.status(200).json("Order Accepted.");
 			} else {
-				res.status(400).json("Order Not Accepted.");
+				res.status(200).json("Order Not Accepted.");
 			}
 		}
 	} catch (error) {
@@ -85,7 +85,7 @@ router.put("/rejectOrder", async (req, res) => {
 				});
 				res.status(200).json("Order Rejected.");
 			} else {
-				res.status(400).json("Order Not Rejected.");
+				res.status(200).json("Order Not Rejected.");
 			}
 		}
 	} catch (error) {
@@ -111,7 +111,7 @@ router.put("/completeOrder", async (req, res) => {
 				});
 				res.status(200).json("Order Completed.");
 			} else {
-				res.status(400).json("Order Not Completed.");
+				res.status(200).json("Order Not Completed.");
 			}
 		}
 	} catch (error) {
