@@ -92,11 +92,63 @@ router.put("/rejectOrder", async (req, res) => {
 });
 
 //GET ACCEPTED ORDERS BY SELLER ID
-router.get("/acceptedOrders", async (req, res) => {
+router.get("/acceptedOrders/:id", async (req, res) => {
 	try {
 		const result = await order
-			.where("sellerId", "==", req.query.sellerId)
+			.where("sellerId", "==", req.params.id)
 			.where("status", "==", "1")
+			.get();
+
+		if (result.empty) {
+			res.status(404).send("No Orders Found.");
+		} else {
+			const orders = [];
+			result.forEach((doc) => {
+				orders.push({
+					id: doc.id,
+					...doc.data(),
+				});
+			});
+			res.status(200).json(orders);
+		}
+	} catch (error) {
+		console.log(error);
+		res.status(500).send(error);
+	}
+});
+
+//GET COMPLETED ORDERS BY SELLER ID
+router.get("/completedOrders/:id", async (req, res) => {
+	try {
+		const result = await order
+			.where("sellerId", "==", req.params.id)
+			.where("status", "==", "3")
+			.get();
+
+		if (result.empty) {
+			res.status(404).send("No Orders Found.");
+		} else {
+			const orders = [];
+			result.forEach((doc) => {
+				orders.push({
+					id: doc.id,
+					...doc.data(),
+				});
+			});
+			res.status(200).json(orders);
+		}
+	} catch (error) {
+		console.log(error);
+		res.status(500).send(error);
+	}
+});
+
+//GET PENDING ORDERS BY SELLER ID
+router.get("/pendingOrders/:id", async (req, res) => {
+	try {
+		const result = await order
+			.where("sellerId", "==", req.params.id)
+			.where("status", "==", "0")
 			.get();
 
 		if (result.empty) {
