@@ -84,6 +84,34 @@ router.put("/rejectOrder", async (req, res) => {
 					status: "2",
 				});
 				res.status(200).json("Order Rejected.");
+			} else {
+				res.status(400).json("Order Not Rejected.");
+			}
+		}
+	} catch (error) {
+		console.log(error);
+		res.status(500).send(error);
+	}
+});
+
+//COMPLETE ORDER
+router.put("/completeOrder", async (req, res) => {
+	try {
+		const resultOrder = await order.doc(req.body.orderId).get();
+
+		if (!resultOrder.exists) {
+			res.send("Order Not Found.");
+		} else {
+			if (
+				resultOrder.data().status === "1" &&
+				resultOrder.data().buyerId === req.body.buyerId
+			) {
+				const result = await order.doc(req.body.orderId).update({
+					status: "3",
+				});
+				res.status(200).json("Order Completed.");
+			} else {
+				res.status(400).json("Order Not Completed.");
 			}
 		}
 	} catch (error) {
