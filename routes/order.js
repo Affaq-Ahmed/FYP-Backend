@@ -31,7 +31,7 @@ router.post("/createOrder", async (req, res) => {
 
 			const result = await order.add(orderData);
 			console.log(result);
-			res.status(200).send(result);
+			res.status(201).json("Order Created.");
 		}
 	} catch (error) {
 		console.log(error);
