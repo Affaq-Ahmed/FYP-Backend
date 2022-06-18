@@ -26,6 +26,7 @@ router.post("/createOrder", async (req, res) => {
 				serviceId: data.serviceId,
 				buyerId: data.buyerId,
 				sellerId: data.sellerId,
+				location: data.location,
 				status: "0", //0 = pending, 1 = accepted, 2 = rejected, 3 = completed, 4 = cancelled
 			};
 
