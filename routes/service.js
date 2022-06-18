@@ -163,6 +163,9 @@ router.put("/modifyService/:id", async (req, res) => {
 router.delete("/delete/:id", async (req, res) => {
 	try {
 		const result = await service.doc(req.params.id).delete();
+		const userResult = user.doc(data.sellerId).update({
+			services: FieldValue.arrayRemove(req.params.id),
+		});
 		console.log(result);
 		res.status(200).send("Service Deleted Successfully");
 	} catch (error) {

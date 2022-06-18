@@ -42,15 +42,59 @@ router.post("/createOrder", async (req, res) => {
 });
 
 //ACCEPT ORDER
-router.post("/acceptOrder", async (req, res) => {
+router.put("/acceptOrder", async (req, res) => {
+	try {
+		const resultOrder = await order.doc(req.body.orderId).get();
+
+		if (!resultOrder.exists) {
+			res.status(404).send("Order Not Found.");
+		} else {
+			if (
+				resultOrder.data().status === "0" &&
+				resultOrder.data().sellerId === req.body.sellerId
+			) {
+				const result = await order.doc(req.body.orderId).update({
+					status: "1",
+				});
+				res.status(200).json("Order Accepted.");
+			} else {
+				res.status(400).json("Order Not Accepted.");
+			}
+		}
+	} catch (error) {
+		console.log(error);
+		res.status(500).json({ error: error });
+	}
+});
+
+//REJECT ORDER
+router.put("/rejectOrder", async (req, res) => {
 	try {
 		const resultOrder = await order.doc(req.body.orderId).get();
 
 		if (!resultOrder.exists) {
 			res.send("Order Not Found.");
 		} else {
-			const data = req.body;
+			if (
+				resultOrder.data().status === "0" &&
+				resultOrder.data().sellerId === req.body.sellerId
+			) {
+				const result = await order.doc(req.body.orderId).update({
+					status: "2",
+				});
+				res.status(200).json("Order Rejected.");
+			}
 		}
+	} catch (error) {
+		console.log(error);
+		res.status(500).send(error);
+	}
+});
+
+//GET ACCEPTED ORDERS BY SELLER ID
+router.get("/acceptedOrders", async (req, res) => {
+	try {
+		const result = await order.where("sellerId", "==", req.query.sellerId & "status",).get();
 	} catch (error) {
 		console.log(error);
 		res.status(500).send(error);
