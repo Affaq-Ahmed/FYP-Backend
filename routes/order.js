@@ -126,7 +126,7 @@ router.get("/completedOrders/:id", async (req, res) => {
 			.get();
 
 		if (result.empty) {
-			res.status(404).send("No Orders Found.");
+			res.status(200).send("No Orders Found.");
 		} else {
 			const orders = [];
 			result.forEach((doc) => {
@@ -152,7 +152,7 @@ router.get("/pendingOrders/:id", async (req, res) => {
 			.get();
 
 		if (result.empty) {
-			res.status(404).send("No Orders Found.");
+			res.status(200).send("No Orders Found.");
 		} else {
 			const orders = [];
 			result.forEach((doc) => {
