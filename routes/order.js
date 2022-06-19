@@ -4,6 +4,23 @@ const { db } = require("../config/firebase");
 
 const order = db.collection("orders");
 const service = db.collection("services");
+const notification = db.collection("notifications");
+
+const notificationText = {
+	1: [
+		"Your order has been placed successfully.",
+		"آپ نے کامیابی کے ساتھ نیا آرڈر دیا ہے۔",
+	],
+	2: [
+		"Congratulations! You have got a new Order.",
+		"مبارک ہو! آپ کو ایک نیا آرڈر ملا ہے",
+	],
+	3: ["Your order has been cancelled.", "آپ کا آرڈر کینسل کر دیا گیا ہے۔"],
+	4: ["Your order has been accepted.", "آپ کا آرڈر تصدیق کر دیا گیا ہے۔"],
+	5: ["Your order has been completed.", "آپ کا آرڈر تکمیل کر دیا گیا ہے۔"],
+	6: ["Your order has been started.", "آپ کا آرڈر شروع کر دیا گیا ہے۔"],
+	7: ["Your order has been rejected", "آپ کا آرڈر منسوخ کر دیا گیا ہے۔"],
+};
 
 //CREATE ORDER
 router.post("/createOrder", async (req, res) => {
@@ -33,6 +50,33 @@ router.post("/createOrder", async (req, res) => {
 			};
 
 			const result = await order.add(orderData);
+
+			const notificationGeneratedSeller = {
+				seen: false,
+				type: "order",
+				orderId: result.id,
+				category: data.category,
+				text: notificationText[2],
+				createdOn: date,
+			};
+
+			const notificationResult = await notification
+				.doc(buyerId)
+				.add(notificationGenerated);
+
+			const notificationGeneratedClient = {
+				seen: false,
+				type: "order",
+				orderId: result.id,
+				category: data.category,
+				text: notificationText[1],
+				createdOn: date,
+			};
+
+			const notificationResult2 = await notification
+				.doc(sellerId)
+				.add(notificationGenerated);
+
 			console.log(result);
 			res.status(201).json("Order Created.");
 		}
@@ -120,6 +164,30 @@ router.put("/completeOrder", async (req, res) => {
 	}
 });
 
+//DELETE OFFER BY BUYER ID
+router.delete("/deleteOrder", async (req, res) => {
+	try {
+		const resultOrder = await order.doc(req.query.orderId).get();
+
+		if (!resultOrder.exists) {
+			res.send("Order Not Found.");
+		} else {
+			if (
+				resultOrder.data().status === "0" &&
+				resultOrder.data().buyerId === req.query.buyerId
+			) {
+				const result = await order.doc(req.query.orderId).delete();
+				res.status(200).json("Order Deleted.");
+			} else {
+				res.status(200).json("Order Not Deleted.");
+			}
+		}
+	} catch (error) {
+		console.log(error);
+		res.status(500).send(error);
+	}
+});
+
 //GET ACCEPTED ORDERS BY SELLER ID
 router.get("/acceptedOrders/:id", async (req, res) => {
 	try {
@@ -177,7 +245,7 @@ router.get("/completedOrders/:id", async (req, res) => {
 	try {
 		const result = await order
 			.where("sellerId", "==", req.params.id)
-			.where("status", "==", "3")
+			.where("status", "in", ["2", "3", "4"])
 			.get();
 
 		if (result.empty) {
@@ -198,16 +266,16 @@ router.get("/completedOrders/:id", async (req, res) => {
 	}
 });
 
-//GET COMPLETED ORDERS BY BUYER ID
+//GET COMPLETED, REJECTED AND CANCELLED ORDERS BY BUYER ID
 router.get("/completedOrdersClient/:id", async (req, res) => {
 	try {
 		const result = await order
 			.where("buyerId", "==", req.params.id)
-			.where("status", "==", "3")
+			.where("status", "in", ["2", "3", "4"])
 			.get();
 
 		if (result.empty) {
-			res.status(200).send([]);
+			res.status(404).send([]);
 		} else {
 			const orders = [];
 			result.forEach((doc) => {

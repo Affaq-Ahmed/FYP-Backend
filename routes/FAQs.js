@@ -9,15 +9,15 @@ router.get("/", async (req, res) => {
 	try {
 		const snapshot = await FAQs.get();
 
-		var FAQs = [];
+		var fetchedFAQs = [];
 		snapshot.forEach((doc) => {
 			var FAQ = doc.data();
-			FAQ.id = parseInt(doc.id);
+			FAQ.id = doc.id;
 			console.log(doc.id, "=>", doc.data());
-			FAQs.push(FAQ);
+			fetchedFAQs.push(FAQ);
 		});
 
-		res.status(200).json(FAQs);
+		res.status(200).json(fetchedFAQs);
 	} catch (error) {
 		console.log(error);
 		res.status(500).send(error);
