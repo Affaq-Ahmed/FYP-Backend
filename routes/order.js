@@ -198,16 +198,16 @@ router.get("/completedOrders/:id", async (req, res) => {
 	}
 });
 
-//GET COMPLETED ORDERS BY BUYER ID
+//GET COMPLETED, REJECTED AND CANCELLED ORDERS BY BUYER ID
 router.get("/completedOrdersClient/:id", async (req, res) => {
 	try {
 		const result = await order
 			.where("buyerId", "==", req.params.id)
-			.where("status", "==", "3")
+			.where("status", "in", ["2", "3", "4"])
 			.get();
 
 		if (result.empty) {
-			res.status(200).send([]);
+			res.status(404).send([]);
 		} else {
 			const orders = [];
 			result.forEach((doc) => {
