@@ -28,7 +28,8 @@ router.post("/createOrder", async (req, res) => {
 				buyerId: data.buyerId,
 				sellerId: data.sellerId,
 				location: data.location,
-				status: "0", //0 = pending, 1 = accepted, 2 = rejected, 3 = completed, 4 = cancelled
+				category: data.category,
+				status: "0", //0 = pending, 1 = accepted, 2 = rejected, 3 = completed, 4 = cancelled by buyer, 5 = cancelled by seller
 			};
 
 			const result = await order.add(orderData);
@@ -58,7 +59,7 @@ router.put("/acceptOrder", async (req, res) => {
 				});
 				res.status(200).json("Order Accepted.");
 			} else {
-				res.status(400).json("Order Not Accepted.");
+				res.status(200).json("Order Not Accepted.");
 			}
 		}
 	} catch (error) {
@@ -83,6 +84,34 @@ router.put("/rejectOrder", async (req, res) => {
 					status: "2",
 				});
 				res.status(200).json("Order Rejected.");
+			} else {
+				res.status(200).json("Order Not Rejected.");
+			}
+		}
+	} catch (error) {
+		console.log(error);
+		res.status(500).send(error);
+	}
+});
+
+//COMPLETE ORDER
+router.put("/completeOrder", async (req, res) => {
+	try {
+		const resultOrder = await order.doc(req.body.orderId).get();
+
+		if (!resultOrder.exists) {
+			res.send("Order Not Found.");
+		} else {
+			if (
+				resultOrder.data().status === "1" &&
+				resultOrder.data().buyerId === req.body.buyerId
+			) {
+				const result = await order.doc(req.body.orderId).update({
+					status: "3",
+				});
+				res.status(200).json("Order Completed.");
+			} else {
+				res.status(200).json("Order Not Completed.");
 			}
 		}
 	} catch (error) {
@@ -92,15 +121,145 @@ router.put("/rejectOrder", async (req, res) => {
 });
 
 //GET ACCEPTED ORDERS BY SELLER ID
-router.get("/acceptedOrders", async (req, res) => {
+router.get("/acceptedOrders/:id", async (req, res) => {
 	try {
 		const result = await order
-			.where("sellerId", "==", req.query.sellerId)
+			.where("sellerId", "==", req.params.id)
 			.where("status", "==", "1")
 			.get();
 
 		if (result.empty) {
-			res.status(404).send("No Orders Found.");
+			res.status(200).send([]);
+		} else {
+			const orders = [];
+			result.forEach((doc) => {
+				orders.push({
+					id: doc.id,
+					...doc.data(),
+				});
+			});
+			res.status(200).json(orders);
+		}
+	} catch (error) {
+		console.log(error);
+		res.status(500).send(error);
+	}
+});
+
+//GET ACCEPTED ORDERS BY BUYER ID
+router.get("/acceptedOrdersClient/:id", async (req, res) => {
+	try {
+		const result = await order
+			.where("buyerId", "==", req.params.id)
+			.where("status", "==", "1")
+			.get();
+
+		if (result.empty) {
+			res.status(200).send([]);
+		} else {
+			const orders = [];
+			result.forEach((doc) => {
+				orders.push({
+					id: doc.id,
+					...doc.data(),
+				});
+			});
+			res.status(200).json(orders);
+		}
+	} catch (error) {
+		console.log(error);
+		res.status(500).send(error);
+	}
+});
+
+//GET COMPLETED ORDERS BY SELLER ID
+router.get("/completedOrders/:id", async (req, res) => {
+	try {
+		const result = await order
+			.where("sellerId", "==", req.params.id)
+			.where("status", "==", "3")
+			.get();
+
+		if (result.empty) {
+			res.status(200).send([]);
+		} else {
+			const orders = [];
+			result.forEach((doc) => {
+				orders.push({
+					id: doc.id,
+					...doc.data(),
+				});
+			});
+			res.status(200).json(orders);
+		}
+	} catch (error) {
+		console.log(error);
+		res.status(500).send(error);
+	}
+});
+
+//GET COMPLETED ORDERS BY BUYER ID
+router.get("/completedOrdersClient/:id", async (req, res) => {
+	try {
+		const result = await order
+			.where("buyerId", "==", req.params.id)
+			.where("status", "==", "3")
+			.get();
+
+		if (result.empty) {
+			res.status(200).send([]);
+		} else {
+			const orders = [];
+			result.forEach((doc) => {
+				orders.push({
+					id: doc.id,
+					...doc.data(),
+				});
+			});
+			res.status(200).json(orders);
+		}
+	} catch (error) {
+		console.log(error);
+		res.status(500).send(error);
+	}
+});
+
+//GET PENDING ORDERS BY SELLER ID
+router.get("/pendingOrders/:id", async (req, res) => {
+	try {
+		const result = await order
+			.where("sellerId", "==", req.params.id)
+			.where("status", "==", "0")
+			.get();
+
+		if (result.empty) {
+			res.status(200).send([]);
+		} else {
+			const orders = [];
+			result.forEach((doc) => {
+				orders.push({
+					id: doc.id,
+					...doc.data(),
+				});
+			});
+			res.status(200).json(orders);
+		}
+	} catch (error) {
+		console.log(error);
+		res.status(500).send(error);
+	}
+});
+
+//GET PENDING ORDERS BY BUYER ID
+router.get("/pendingOrdersClient/:id", async (req, res) => {
+	try {
+		const result = await order
+			.where("buyerId", "==", req.params.id)
+			.where("status", "==", "0")
+			.get();
+
+		if (result.empty) {
+			res.status(200).send([]);
 		} else {
 			const orders = [];
 			result.forEach((doc) => {
