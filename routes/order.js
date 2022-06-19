@@ -177,7 +177,7 @@ router.get("/completedOrders/:id", async (req, res) => {
 	try {
 		const result = await order
 			.where("sellerId", "==", req.params.id)
-			.where("status", "==", "3")
+			.where("status", "in", ["2", "3", "4"])
 			.get();
 
 		if (result.empty) {
