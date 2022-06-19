@@ -120,6 +120,30 @@ router.put("/completeOrder", async (req, res) => {
 	}
 });
 
+//DELETE OFFER BY BUYER ID
+router.delete("/deleteOrder", async (req, res) => {
+	try {
+		const resultOrder = await order.doc(req.body.orderId).get();
+
+		if (!resultOrder.exists) {
+			res.send("Order Not Found.");
+		} else {
+			if (
+				resultOrder.data().status === "0" &&
+				resultOrder.data().buyerId === req.body.buyerId
+			) {
+				const result = await order.doc(req.body.orderId).delete();
+				res.status(200).json("Order Deleted.");
+			} else {
+				res.status(200).json("Order Not Deleted.");
+			}
+		}
+	} catch (error) {
+		console.log(error);
+		res.status(500).send(error);
+	}
+});
+
 //GET ACCEPTED ORDERS BY SELLER ID
 router.get("/acceptedOrders/:id", async (req, res) => {
 	try {
