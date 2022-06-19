@@ -13,7 +13,7 @@ const notificationText = {
 	4: ["Your order has been confirmed.", "آپ کا آرڈر کی تصدیق کر دیا گیا ہے۔"],
 	5: ["Your order has been completed.", "آپ کا آرڈر تکمیل کر دیا گیا ہے۔"],
 	6: ["Your order has been started.", "آپ کا آرڈر شروع کر دیا گیا ہے۔"],
-	7: 
+	7: ["Your order has been rejected", "آپ کا آرڈر منسوخ کر دیا گیا ہے۔"],
 }
 
 //CREATE ORDER
