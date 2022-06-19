@@ -51,7 +51,20 @@ router.post("/createOrder", async (req, res) => {
 
 			const result = await order.add(orderData);
 
-			const notificationGenerated = {
+			const notificationGeneratedSeller = {
+				seen: false,
+				type: "order",
+				orderId: result.id,
+				category: data.category,
+				text: notificationText[2],
+				createdOn: date,
+			};
+
+			const notificationResult = await notification
+				.doc(buyerId)
+				.add(notificationGenerated);
+
+			const notificationGeneratedClient = {
 				seen: false,
 				type: "order",
 				orderId: result.id,
@@ -59,6 +72,11 @@ router.post("/createOrder", async (req, res) => {
 				text: notificationText[1],
 				createdOn: date,
 			};
+
+			const notificationResult2 = await notification
+				.doc(sellerId)
+				.add(notificationGenerated);
+
 			console.log(result);
 			res.status(201).json("Order Created.");
 		}
