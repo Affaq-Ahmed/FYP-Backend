@@ -7,14 +7,20 @@ const service = db.collection("services");
 const notification = db.collection("notifications");
 
 const notificationText = {
-	1: ["Your order has been placed successfully.", "آپ نے کامیابی کے ساتھ نیا آرڈر دیا ہے۔"],
-	2: ["Congratulations! You have got a new Order.", "مبارک ہو! آپ کو ایک نیا آرڈر ملا ہے"],
+	1: [
+		"Your order has been placed successfully.",
+		"آپ نے کامیابی کے ساتھ نیا آرڈر دیا ہے۔",
+	],
+	2: [
+		"Congratulations! You have got a new Order.",
+		"مبارک ہو! آپ کو ایک نیا آرڈر ملا ہے",
+	],
 	3: ["Your order has been cancelled.", "آپ کا آرڈر کینسل کر دیا گیا ہے۔"],
-	4: ["Your order has been confirmed.", "آپ کا آرڈر کی تصدیق کر دیا گیا ہے۔"],
+	4: ["Your order has been accepted.", "آپ کا آرڈر تصدیق کر دیا گیا ہے۔"],
 	5: ["Your order has been completed.", "آپ کا آرڈر تکمیل کر دیا گیا ہے۔"],
 	6: ["Your order has been started.", "آپ کا آرڈر شروع کر دیا گیا ہے۔"],
 	7: ["Your order has been rejected", "آپ کا آرڈر منسوخ کر دیا گیا ہے۔"],
-}
+};
 
 //CREATE ORDER
 router.post("/createOrder", async (req, res) => {
@@ -52,8 +58,7 @@ router.post("/createOrder", async (req, res) => {
 				category: data.category,
 				text: notificationText[1],
 				createdOn: date,
-				serviceImage: resultService.
-			}
+			};
 			console.log(result);
 			res.status(201).json("Order Created.");
 		}
