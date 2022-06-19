@@ -12,7 +12,7 @@ router.get("/", async (req, res) => {
 		var fetchedFAQs = [];
 		snapshot.forEach((doc) => {
 			var FAQ = doc.data();
-			FAQ.id = parseInt(doc.id);
+			FAQ.id = doc.id;
 			console.log(doc.id, "=>", doc.data());
 			fetchedFAQs.push(FAQ);
 		});
