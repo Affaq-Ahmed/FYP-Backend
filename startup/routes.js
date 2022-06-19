@@ -5,6 +5,7 @@ const service = require("./../routes/service");
 const order = require("./../routes/order");
 const category = require("./../routes/category");
 const feedback = require("./../routes/feedback");
+const FAQs = require("./../routes/FAQs");
 
 const error = require("./../middleware/error");
 
@@ -17,6 +18,7 @@ module.exports = function (app) {
 	app.use("/api/order", order);
 	//app.use("/api/feedback", feedback);
 	app.use("/api/category", category);
+	app.use("/api/FAQs", FAQs);
 
 	app.use(error);
 };
