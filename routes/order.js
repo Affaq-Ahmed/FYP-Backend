@@ -92,7 +92,7 @@ router.put("/acceptOrder", async (req, res) => {
 		const resultOrder = await order.doc(req.body.orderId).get();
 
 		if (!resultOrder.exists) {
-			res.status(404).send("Order Not Found.");
+			res.status(200).send("Order Not Found.");
 		} else {
 			if (
 				resultOrder.data().status === "0" &&
@@ -275,7 +275,7 @@ router.get("/completedOrdersClient/:id", async (req, res) => {
 			.get();
 
 		if (result.empty) {
-			res.status(404).send([]);
+			res.status(200).send([]);
 		} else {
 			const orders = [];
 			result.forEach((doc) => {
