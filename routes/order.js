@@ -4,7 +4,7 @@ const { db } = require("../config/firebase");
 
 const order = db.collection("orders");
 const service = db.collection("services");
-const notification = db.collection("notifications");
+const notification = db.collection("users").collection("notifications");
 
 const notificationText = {
 	1: [
@@ -62,7 +62,7 @@ router.post("/createOrder", async (req, res) => {
 
 			const notificationResult = await notification
 				.doc(buyerId)
-				.add(notificationGenerated);
+				.add(notificationGeneratedSeller);
 
 			const notificationGeneratedClient = {
 				seen: false,
@@ -75,7 +75,7 @@ router.post("/createOrder", async (req, res) => {
 
 			const notificationResult2 = await notification
 				.doc(sellerId)
-				.add(notificationGenerated);
+				.add(notificationGeneratedClient);
 
 			console.log(result);
 			res.status(201).json("Order Created.");
