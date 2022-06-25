@@ -4,7 +4,7 @@ const { db } = require("../config/firebase");
 
 const order = db.collection("orders");
 const service = db.collection("services");
-const notification = db.collection("users").collection("notifications");
+const user = db.collection("users");
 
 const notificationText = {
 	1: [
@@ -60,8 +60,8 @@ router.post("/createOrder", async (req, res) => {
 				createdOn: date,
 			};
 
-			const notificationResult = await notification
-				.doc(buyerId)
+			const notificationResult = await user
+				.doc(buyerId).collection("notifications")
 				.add(notificationGeneratedSeller);
 
 			const notificationGeneratedClient = {
@@ -73,8 +73,9 @@ router.post("/createOrder", async (req, res) => {
 				createdOn: date,
 			};
 
-			const notificationResult2 = await notification
+			const notificationResult2 = await user
 				.doc(sellerId)
+				.collection("notifications")
 				.add(notificationGeneratedClient);
 
 			console.log(result);
