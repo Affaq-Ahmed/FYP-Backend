@@ -65,7 +65,7 @@ router.post("/createProfile", async (req, res) => {
 				phone: data.phone,
 				cnic: data.cnic,
 				profileImage: data.profileImage,
-				profileStatus: "0", //0: not verified, 1: verified ,2: deleted, 3: banned
+				profileStatus: "0", //0: not verified, 1: verified ,2: processing
 				cnicPhoto: "",
 				createdOn: date,
 				services: [],
@@ -219,5 +219,36 @@ router.post("/changePreference", async (req, res) => {
 		res.status(500).json({ message: error.message });
 	}
 });
+
+//GET ORDER COMPLETION RATE OF A SELLER
+router.get("/orderCompletionRate/:id", async (req, res) => {
+	try {
+		//GET ALL ORDERS OF A SELLER
+		const orders = await order.where("sellerId", "==", req.params.id).get();
+		//GET ALL COMPLETED ORDERS OF A SELLER
+		const completedOrders = orders.docs.filter(
+			(order) => order.data().status === "3"
+		);
+		//COUNT OF COMPLETED ORDERS
+		const countCompleted = completedOrders.length;
+		//GET ALL COMPLETED, CANCELLED AND ACCPETED ORDERS OF A SELLER
+		const acceptedOrders = orders.docs.filter(
+			(order) =>
+				order.data().status === "1" ||
+				order.data().status === "4" ||
+				order.data().status === "0"
+		);
+		//COUNT OF COMPLETED ORDERS
+		const countAccepted = orders.length - acceptedOrders.length;
+		//CALCULATE ORDER COMPLETION RATE
+		const orderCompletionRate = (countCompleted / countAccepted) * 100;
+
+		res.status(200).json({ orderCompletionRate });
+
+	} catch (error) {
+		console.log(error.message);
+		res.status(500).json({ message: error.message });
+	}
+})
 
 module.exports = router;
