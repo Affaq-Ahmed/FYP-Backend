@@ -39,7 +39,7 @@ router.post("/", async (req, res) => {
 });
 
 //VERIFY User
-router.post("/approveUser", async (req, res) => {
+router.put("/approveUser", async (req, res) => {
 	try {
 		const userRef = await user.doc(req.body.uid).update({
 			profileStatus: "1",
@@ -53,7 +53,7 @@ router.post("/approveUser", async (req, res) => {
 });
 
 //REJECT User
-router.post("/rejectUser", async (req, res) => {
+router.put("/rejectUser", async (req, res) => {
 	try {
 		const userRef = await user.doc(req.body.uid).update({
 			profileStatus: "0",
