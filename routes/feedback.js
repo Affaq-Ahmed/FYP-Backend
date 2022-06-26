@@ -47,25 +47,18 @@ router.post("/", async (req, res) => {
 		});
 
 		//Update Rating of the service
-		const orderRef = await order.doc(req.body.orderId).get();
-		if (orderRef.exists) {
-			const orderData = orderRef.data();
-			const serviceRef = await service.doc(req.body.serviceId).get();
-			if (serviceRef.exists) {
-				const serviceData = serviceRef.data();
-				const rating = serviceData.rating;
-				const feedbackRef = await feedback.doc(feedbackRef.id).get();
-				if (feedbackRef.exists) {
-					const feedbackData = feedbackRef.data();
-					const feedbackRating = feedbackData.rating;
-					const newRating =
-						(rating * serviceData.feedback.length + feedbackRating) /
-						(serviceData.feedback.length + 1);
-					const serviceUpdate = await service.doc(req.body.serviceId).update({
-						rating: newRating,
-					});
-				}
-			}
+
+		const serviceData = serviceRef.data();
+		const rating = serviceData.rating;
+		if (feedbackRef.exists) {
+			const feedbackData = feedbackRef.data();
+			const feedbackRating = feedbackData.rating;
+			const newRating =
+				(rating * serviceData.feedback.length + feedbackRating) /
+				(serviceData.feedback.length + 1);
+			const serviceUpdate = await service.doc(req.body.serviceId).update({
+				rating: newRating,
+			});
 		}
 
 		res.status(200).json("Feedback added successfully");
@@ -82,9 +75,9 @@ router.get("/:id", async (req, res) => {
 
 		var feedbacks = [];
 		snapshot.forEach((doc) => {
-			feedbacks = snapshot.data();
-			feedbacks.id = snapshot.id;
-			console.log(snapshot.id, "=>", snapshot.data());
+			var singleFeedback = doc.data();
+			singleFeedback.id = doc.id;
+			feedbacks.push(singleFeedback);
 		});
 
 		res.status(200).json(feedbacks);
