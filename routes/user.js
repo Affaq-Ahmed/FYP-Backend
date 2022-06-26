@@ -42,6 +42,49 @@ router.get("/pendingUsers", async (req, res) => {
 	}
 });
 
+//GET USER COUNT AND NEW USERS TODAY
+router.get("/userCount", async (req, res) => {
+	try {
+		//GET USER COUNT
+		const userCount = await user.get();
+		const userCountData = userCount.docs.map((doc) => {
+			const data = doc.data();
+			data.id = doc.id;
+			return data;
+		}).length;
+
+		//GET NEW USERS TODAY
+		const today = new Date();
+		const todayStart = new Date(
+			today.getFullYear(),
+			today.getMonth(),
+			today.getDate()
+		);
+		const todayEnd = new Date(
+			today.getFullYear(),
+			today.getMonth(),
+			today.getDate() + 1
+		);
+		const todaySnapshot = await user
+			.where("createdOn", ">=", todayStart)
+			.where("createdOn", "<", todayEnd)
+			.get();
+		const todayUserCount = todaySnapshot.docs.map((doc) => {
+			const data = doc.data();
+			data.id = doc.id;
+			return data;
+		}).length;
+
+		res
+			.status(200)
+			.json({ userCount: userCountData, newUsers: todayUserCount });
+	} catch (error) {
+		console.log(error);
+		res.status(500).send(error);
+	}
+});
+
+//CREATE A USER
 router.post("/createProfile", async (req, res) => {
 	console.log(req.body);
 	try {

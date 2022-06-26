@@ -32,6 +32,7 @@ router.get("/", async (req, res) => {
 router.post("/", async (req, res) => {
 	try {
 		const data = {
+			email: req.body.email,
 			orderId: req.body.orderId,
 			buyerId: req.body.buyerId,
 			serviceId: req.body.serviceId,
