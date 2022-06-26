@@ -47,8 +47,8 @@ router.post("/", async (req, res) => {
 		});
 
 		//Update Rating of the service
-
-		const serviceData = serviceRef.data();
+    const serviceSnapshot = await service.doc(req.body.serviceId).get();
+		const serviceData = serviceSnapshot.data();
 		const rating = serviceData.rating;
 		const feedbackCount = serviceData.feedback.length;
 		const newRating =
