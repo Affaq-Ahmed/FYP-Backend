@@ -69,7 +69,9 @@ router.post("/", async (req, res) => {
 //GET FEEDBACK OF A SERVICE
 router.get("/:id", async (req, res) => {
 	try {
-		const snapshot = await feedback.doc(req.params.id).get();
+		const snapshot = await feedback
+			.where("serviceId", "==", req.params.id)
+			.get();
 
 		var feedbacks = [];
 		snapshot.forEach((doc) => {
