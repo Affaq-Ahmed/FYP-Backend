@@ -6,6 +6,7 @@ const { FieldValue } = require("firebase-admin/firestore");
 const feedback = db.collection("feedback");
 const service = db.collection("services");
 const order = db.collection("order");
+const user = db.collection("users");
 
 //GET FEEDBACKS OF A SERVICE
 router.get("/", async (req, res) => {
@@ -45,6 +46,28 @@ router.post("/", async (req, res) => {
 			feedback: FieldValue.arrayUnion(feedbackRef.id),
 		});
 
+		//Update Rating of the service
+		const orderRef = await order.doc(req.body.orderId).get();
+		if (orderRef.exists) {
+			const orderData = orderRef.data();
+			const serviceRef = await service.doc(req.body.serviceId).get();
+			if (serviceRef.exists) {
+				const serviceData = serviceRef.data();
+				const rating = serviceData.rating;
+				const feedbackRef = await feedback.doc(feedbackRef.id).get();
+				if (feedbackRef.exists) {
+					const feedbackData = feedbackRef.data();
+					const feedbackRating = feedbackData.rating;
+					const newRating =
+						(rating * serviceData.feedback.length + feedbackRating) /
+						(serviceData.feedback.length + 1);
+					const serviceUpdate = await service.doc(req.body.serviceId).update({
+						rating: newRating,
+					});
+				}
+			}
+		}
+
 		res.status(200).json("Feedback added successfully");
 	} catch (error) {
 		console.log(error);
@@ -57,9 +80,12 @@ router.get("/:id", async (req, res) => {
 	try {
 		const snapshot = await feedback.doc(req.params.id).get();
 
-		var feedbacks = snapshot.data();
-		feedbacks.id = snapshot.id;
-		console.log(snapshot.id, "=>", snapshot.data());
+		var feedbacks = [];
+		snapshot.forEach((doc) => {
+			feedbacks = snapshot.data();
+			feedbacks.id = snapshot.id;
+			console.log(snapshot.id, "=>", snapshot.data());
+		});
 
 		res.status(200).json(feedbacks);
 	} catch (error) {

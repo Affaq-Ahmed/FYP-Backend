@@ -51,6 +51,10 @@ router.post("/createOrder", async (req, res) => {
 
 			const result = await order.add(orderData);
 
+			const serviceRef = await service.doc(data.serviceId).update({
+				orders: FieldValue.arrayUnion(result.id),
+			});
+
 			const notificationGeneratedSeller = {
 				seen: false,
 				type: "order",
@@ -129,6 +133,11 @@ router.put("/rejectOrder", async (req, res) => {
 				const result = await order.doc(req.body.orderId).update({
 					status: "2",
 				});
+
+				const serviceRef = await service.doc(data.serviceId).update({
+					orders: FieldValue.arrayRemove(req.body.orderId),
+				});	
+
 				res.status(200).json("Order Rejected.");
 			} else {
 				res.status(200).json("Order Not Rejected.");
