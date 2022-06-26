@@ -6,6 +6,7 @@ const order = require("./../routes/order");
 const category = require("./../routes/category");
 const feedback = require("./../routes/feedback");
 const FAQs = require("./../routes/FAQs");
+const admin = require("./../routes/admin");
 
 const error = require("./../middleware/error");
 
@@ -19,6 +20,7 @@ module.exports = function (app) {
 	//app.use("/api/feedback", feedback);
 	app.use("/api/category", category);
 	app.use("/api/FAQs", FAQs);
+	app.use("/api/admin", admin);
 
 	app.use(error);
 };

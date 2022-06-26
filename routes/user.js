@@ -19,6 +19,26 @@ router.get("/", async (req, res) => {
 	}
 });
 
+//GET ALL PENDING USERS
+router.get("/pendingUsers", async (req, res) => {
+  try {
+    const userSnapshot = await user.where("profileStatus", "==", "0").get();
+
+    const userData = userSnapshot.docs.map((doc) => {
+      const data = doc.data();
+      data.id = doc.id;
+      return data;
+    }).sort((a, b) => {
+      return a.createdOn - b.createdOn;
+    }).reverse();
+
+    res.status(200).json(userData);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send(error);
+  }
+})
+
 router.post("/createProfile", async (req, res) => {
 	console.log(req.body);
 	try {
@@ -42,7 +62,7 @@ router.post("/createProfile", async (req, res) => {
 				phone: data.phone,
 				cnic: data.cnic,
 				profileImage: data.profileImage,
-				profileStatus: "0", //0: not verified, 1: verified ,2: deleted
+				profileStatus: "0", //0: not verified, 1: verified ,2: deleted, 3: banned
 				cnicPhoto: "",
 				createdOn: date,
 				services: [],

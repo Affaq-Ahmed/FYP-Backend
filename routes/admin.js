@@ -24,19 +24,75 @@ router.post("/", async (req, res) => {
 			createdOn: new Date(),
 			image: req.body.image,
 		};
-		const adminRef = await admin.add(data);
+		const adminRef = await admin.doc(req.body.uid).add(data);
 
 		const adminSnapshot = await adminRef.get();
 
 		const adminData = adminSnapshot.data();
 		adminData.id = adminSnapshot.id;
 
-		res.status(200).json(adminData);
+		res.status(201).json(adminData);
 	} catch {
 		console.log(error);
 		res.status(500).send(error);
 	}
 });
 
-//Approve User
-router.post("/approveUser", async (req, res) => {});
+//VERIFY User
+router.post("/approveUser", async (req, res) => {
+	try {
+		const userRef = await user.doc(req.body.uid).update({
+			profileStatus: "1",
+		});
+
+		res.status(200).json("User approved successfully");
+	} catch (error) {
+		console.log(error);
+		res.status(500).send(error);
+	}
+});
+
+//REJECT User
+router.post("/rejectUser", async (req, res) => {
+	try {
+		const userRef = await user.doc(req.body.uid).update({
+			profileStatus: "3",
+		});
+
+		res.status(200).json("User rejected successfully");
+	} catch (error) {
+		console.log(error);
+		res.status(500).send(error);
+	}
+});
+
+//CREATE CATEGORY
+router.post("/category", async (req, res) => {
+	try {
+		const data = {
+			name: req.body.name,
+			createdOn: new Date(),
+			imageUrl: req.body.imageURL,
+		};
+		const categoryRef = await category.doc(req.body.uid).add(data);
+
+		res.status(201).json("Category Created Successfully");
+	} catch (error) {
+		console.log(error);
+		res.status(500).send(error);
+	}
+});
+
+//DELETE A USER
+router.delete("/user:uid", async (req, res) => {
+  try {
+    const userRef = await user.doc(req.params.uid).delete();
+
+    res.status(200).json("User deleted successfully");
+  } catch (error) {
+    console.log(error);
+    res.status(500).send(error);
+  }
+})
+
+module.exports = router;
