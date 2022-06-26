@@ -22,7 +22,7 @@ router.get("/", async (req, res) => {
 //GET ALL PENDING USERS
 router.get("/pendingUsers", async (req, res) => {
   try {
-    const userSnapshot = await user.where("profileStatus", "==", "0").get();
+    const userSnapshot = await user.where("profileStatus", "==", "2").get();
 
     const userData = userSnapshot.docs.map((doc) => {
       const data = doc.data();
