@@ -56,7 +56,7 @@ router.post("/createOrder", async (req, res) => {
 				type: "order",
 				orderId: result.id,
 				category: data.category,
-				text: notificationText[2],
+				text: notificationText[1],
 				createdOn: date,
 			};
 
@@ -70,7 +70,7 @@ router.post("/createOrder", async (req, res) => {
 				type: "order",
 				orderId: result.id,
 				category: data.category,
-				text: notificationText[1],
+				text: notificationText[2],
 				createdOn: date,
 			};
 
