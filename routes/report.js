@@ -6,11 +6,21 @@ const report = db.collection("report");
 
 //CREATE A REPORT
 router.post("/", async (req, res) => {
-  try {
-    
-  } catch (error) {
-    console.log(error);
-    res.status(500).send(error);
-  }
+	try {
+		const data = {
+			orderId: req.body.orderId,
+			reporterId: req.body.reporterId,
+			reportMessage: req.body.reportMessage,
+			createdOn: new Date(),
+		};
+
+		const reportRef = await report.add(data);
+		console.log(reportRef);
+
+		res.status(200).json("Report added successfully");
+	} catch (error) {
+		console.log(error);
+		res.status(500).send(error);
+	}
 });
 module.exports = router;
