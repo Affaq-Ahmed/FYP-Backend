@@ -21,23 +21,26 @@ router.get("/", async (req, res) => {
 
 //GET ALL PENDING USERS
 router.get("/pendingUsers", async (req, res) => {
-  try {
-    const userSnapshot = await user.where("profileStatus", "==", "2").get();
+	try {
+		const userSnapshot = await user.where("profileStatus", "==", "2").get();
 
-    const userData = userSnapshot.docs.map((doc) => {
-      const data = doc.data();
-      data.id = doc.id;
-      return data;
-    }).sort((a, b) => {
-      return a.createdOn - b.createdOn;
-    }).reverse();
+		const userData = userSnapshot.docs
+			.map((doc) => {
+				const data = doc.data();
+				data.id = doc.id;
+				return data;
+			})
+			.sort((a, b) => {
+				return a.createdOn - b.createdOn;
+			})
+			.reverse();
 
-    res.status(200).json(userData);
-  } catch (error) {
-    console.log(error);
-    res.status(500).send(error);
-  }
-})
+		res.status(200).json(userData);
+	} catch (error) {
+		console.log(error);
+		res.status(500).send(error);
+	}
+});
 
 router.post("/createProfile", async (req, res) => {
 	console.log(req.body);
@@ -216,7 +219,5 @@ router.post("/changePreference", async (req, res) => {
 		res.status(500).json({ message: error.message });
 	}
 });
-
-
 
 module.exports = router;
