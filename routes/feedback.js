@@ -31,7 +31,7 @@ router.get("/", async (req, res) => {
 router.post("/", async (req, res) => {
 	try {
 		const data = {
-      orderId: req.body.orderId,
+			orderId: req.body.orderId,
 			buyerId: req.body.buyerId,
 			serviceId: req.body.serviceId,
 			rating: req.body.rating,
@@ -39,13 +39,29 @@ router.post("/", async (req, res) => {
 			createdOn: new Date(),
 		};
 		const feedbackRef = await feedback.add(data);
-    console.log(feedbackRef);
+		console.log(feedbackRef);
 
 		const serviceRef = await service.doc(req.body.serviceId).update({
 			feedback: FieldValue.arrayUnion(feedbackRef.id),
 		});
 
 		res.status(200).json("Feedback added successfully");
+	} catch (error) {
+		console.log(error);
+		res.status(500).send(error);
+	}
+});
+
+//GET FEEDBACK OF A SERVICE
+router.get("/:id", async (req, res) => {
+	try {
+		const snapshot = await feedback.doc(req.params.id).get();
+
+		var feedbacks = snapshot.data();
+		feedbacks.id = snapshot.id;
+		console.log(snapshot.id, "=>", snapshot.data());
+
+		res.status(200).json(feedbacks);
 	} catch (error) {
 		console.log(error);
 		res.status(500).send(error);
