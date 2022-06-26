@@ -47,7 +47,7 @@ router.post("/", async (req, res) => {
 		});
 
 		//Update Rating of the service
-    const serviceSnapshot = await service.doc(req.body.serviceId).get();
+		const serviceSnapshot = await service.doc(req.body.serviceId).get();
 		const serviceData = serviceSnapshot.data();
 		const rating = serviceData.rating;
 		const feedbackCount = serviceData.feedback.length;
@@ -58,12 +58,47 @@ router.post("/", async (req, res) => {
 			rating: newRating,
 		});
 
+		//Update Rating of the seller
+		const sellerId = serviceData.sellerId;
+		updateSellerRating(sellerId, req.body.rating);
+
 		res.status(200).json("Feedback added successfully");
 	} catch (error) {
 		console.log(error);
 		res.status(500).send(error);
 	}
 });
+
+//UPDATE SELLER RATING IN A FUNCTION COUNTING THE RATINGS FROM ALL THE SERVICES AND THEIR FEEDBACKS
+async function updateSellerRating(sellerId, rating) {
+	//GET SELLER
+	const sellerSnapshot = await user.doc(sellerId).get();
+	//GET ALL SERVICES OF THE SELLER
+	const sellerData = sellerSnapshot.data();
+	const services = sellerData.services;
+	//GET ALL FEEDBACKS OF THE SERVICES
+	const feedbacks = [];
+	for (let i = 0; i < services.length; i++) {
+		const serviceSnapshot = await service.doc(services[i]).get();
+		const serviceData = serviceSnapshot.data();
+		const serviceFeedbacks = serviceData.feedback;
+		for (let j = 0; j < serviceFeedbacks.length; j++) {
+			const feedbackSnapshot = await feedback.doc(serviceFeedbacks[j]).get();
+			const feedbackData = feedbackSnapshot.data();
+			feedbacks.push(feedbackData);
+		}
+	}
+	//CALCULATE RATING OF THE SELLER
+	var sellerRating = 0;
+	for (let i = 0; i < feedbacks.length; i++) {
+		sellerRating += feedbacks[i].rating;
+	}
+	sellerRating = sellerRating + rating / feedbacks.length + 1;
+	//UPDATE RATING OF THE SELLER
+	const sellerRef = await user.doc(sellerId).update({
+		rating: sellerRating,
+	});
+}
 
 //GET FEEDBACK OF A SERVICE
 router.get("/:id", async (req, res) => {
