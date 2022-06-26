@@ -85,14 +85,32 @@ router.post("/category", async (req, res) => {
 
 //DELETE A USER
 router.delete("/user:uid", async (req, res) => {
-  try {
-    const userRef = await user.doc(req.params.uid).delete();
+	try {
+		const userRef = await user.doc(req.params.uid).delete();
 
-    res.status(200).json("User deleted successfully");
-  } catch (error) {
-    console.log(error);
-    res.status(500).send(error);
-  }
-})
+		res.status(200).json("User deleted successfully");
+	} catch (error) {
+		console.log(error);
+		res.status(500).send(error);
+	}
+});
+
+//GET ALL ADMINS
+router.get("/", async (req, res) => {
+	try {
+		const adminSnapshot = await admin.get();
+
+		const adminData = adminSnapshot.docs.map((doc) => {
+			const data = doc.data();
+			data.id = doc.id;
+			return data;
+		});
+
+		res.status(200).json(adminData);
+	} catch (error) {
+		console.log(error);
+		res.status(500).send(error);
+	}
+});
 
 module.exports = router;
