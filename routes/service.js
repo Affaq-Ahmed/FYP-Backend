@@ -39,6 +39,39 @@ router.get("/", async (req, res) => {
 	res.send(services);
 });
 
+//GET SERVICE COUNT AND NEW SERVICES TODAY
+router.get("/count", async (req, res) => {
+	try {
+		//GET SERVICE COUNT
+		const snapshot = await service.get();
+		var serviceCount = snapshot.size;
+
+		//GET NEW SERVICES TODAY
+		const today = new Date();
+		const todayStart = new Date(
+			today.getFullYear(),
+			today.getMonth(),
+			today.getDate()
+		);
+		const todayEnd = new Date(
+			today.getFullYear(),
+			today.getMonth(),
+			today.getDate(),
+			23,
+			59,
+			59
+		);
+		const todaySnapshot = await service.where("createdOn", ">=", todayStart).where("createdOn", "<=", todayEnd).get();
+		var newServiceCount = todaySnapshot.size;
+
+		res.status(200).json({ serviceCount, newServiceCount });
+	} catch (error) {
+		console.log(error);
+		res.status(500).send(error);
+	}
+})
+
+//CREATE SERVICE
 router.post("/createService", async (req, res) => {
 	const data = req.body;
 	const date = new Date();

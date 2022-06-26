@@ -10,8 +10,10 @@ router.get("/", async (req, res) => {
 
 		var users = [];
 		snapshot.forEach((doc) => {
+			var user = doc.data();
 			console.log(doc.id, "=>", doc.data());
-			users.push(doc.data());
+			user.id = doc.id;
+			users.push(user);
 		});
 		res.status(200).send(users);
 	} catch (error) {
@@ -19,6 +21,72 @@ router.get("/", async (req, res) => {
 	}
 });
 
+//GET ALL PENDING USERS
+router.get("/pendingUsers", async (req, res) => {
+	try {
+		const userSnapshot = await user.where("profileStatus", "==", "0").get();
+
+		const userData = userSnapshot.docs
+			.map((doc) => {
+				const data = doc.data();
+				data.id = doc.id;
+				return data;
+			})
+			.sort((a, b) => {
+				return a.createdOn - b.createdOn;
+			})
+			.reverse();
+
+		res.status(200).json(userData);
+	} catch (error) {
+		console.log(error);
+		res.status(500).send(error);
+	}
+});
+
+//GET USER COUNT AND NEW USERS TODAY
+router.get("/userCount", async (req, res) => {
+	try {
+		//GET USER COUNT
+		const userCount = await user.get();
+		const userCountData = userCount.docs.map((doc) => {
+			const data = doc.data();
+			data.id = doc.id;
+			return data;
+		}).length;
+
+		//GET NEW USERS TODAY
+		const today = new Date();
+		const todayStart = new Date(
+			today.getFullYear(),
+			today.getMonth(),
+			today.getDate()
+		);
+		const todayEnd = new Date(
+			today.getFullYear(),
+			today.getMonth(),
+			today.getDate() + 1
+		);
+		const todaySnapshot = await user
+			.where("createdOn", ">=", todayStart)
+			.where("createdOn", "<", todayEnd)
+			.get();
+		const todayUserCount = todaySnapshot.docs.map((doc) => {
+			const data = doc.data();
+			data.id = doc.id;
+			return data;
+		}).length;
+
+		res
+			.status(200)
+			.json({ userCount: userCountData, newUsers: todayUserCount });
+	} catch (error) {
+		console.log(error);
+		res.status(500).send(error);
+	}
+});
+
+//CREATE A USER
 router.post("/createProfile", async (req, res) => {
 	console.log(req.body);
 	try {
@@ -42,7 +110,7 @@ router.post("/createProfile", async (req, res) => {
 				phone: data.phone,
 				cnic: data.cnic,
 				profileImage: data.profileImage,
-				profileStatus: "0", //0: not verified, 1: verified ,2: deleted
+				profileStatus: "0", //0: not verified, 1: verified ,2: processing
 				cnicPhoto: "",
 				createdOn: date,
 				services: [],
@@ -123,10 +191,30 @@ router.get("/:username", async (req, res) => {
 router.get("/byId/:id", async (req, res) => {
 	try {
 		const result = await user.doc(req.params.id).get();
-		if (!result.exists) res.send("User Does not Exists.");
+		if (!result) res.send("User Does not Exists.");
 		else {
-			console.log(result._fieldsProto);
-			res.send(result._fieldsProto);
+			const user = {
+				id: result.id,
+				address: result._fieldsProto.address.stringValue,
+				dob: result._fieldsProto.dob.stringValue,
+				firstName: result._fieldsProto.firstName.stringValue,
+				lastName: result._fieldsProto.lastName.stringValue,
+				profileImage: result._fieldsProto.profileImage.stringValue,
+				phone: result._fieldsProto.phone.stringValue,
+				cnic: result._fieldsProto.cnic.stringValue,
+				email: result._fieldsProto.email.stringValue,
+				profileStatus: result._fieldsProto.profileStatus.stringValue,
+				createdOn: result._fieldsProto.createdOn.stringValue,
+				services: result._fieldsProto.services.arrayValue.values.map(
+					(service) => {
+						return service.stringValue;
+					}
+				),
+				sellerLevel: result._fieldsProto.sellerLevel.stringValue,
+				preference: result._fieldsProto.preference.mapValue.fields,
+			};
+			console.log(user);
+			res.status(200).json({ user });
 		}
 	} catch (error) {
 		console.log(error);
@@ -191,6 +279,55 @@ router.post("/changePreference", async (req, res) => {
 			console.log(updatedUser);
 			res.status(200).send(updatedUser);
 		}
+	} catch (error) {
+		console.log(error.message);
+		res.status(500).json({ message: error.message });
+	}
+});
+
+//GET ORDER COMPLETION RATE OF A SELLER
+router.get("/orderCompletionRate/:id", async (req, res) => {
+	try {
+		//GET ALL ORDERS OF A SELLER
+		const orders = await order.where("sellerId", "==", req.params.id).get();
+		//GET ALL COMPLETED ORDERS OF A SELLER
+		const completedOrders = orders.docs.filter(
+			(order) => order.data().status === "3"
+		);
+		//COUNT OF COMPLETED ORDERS
+		const countCompleted = completedOrders.length;
+		//GET ALL COMPLETED, CANCELLED AND ACCPETED ORDERS OF A SELLER
+		const acceptedOrders = orders.docs.filter(
+			(order) =>
+				order.data().status === "1" ||
+				order.data().status === "4" ||
+				order.data().status === "0"
+		);
+		//COUNT OF COMPLETED ORDERS
+		const countAccepted = orders.length - acceptedOrders.length;
+		//CALCULATE ORDER COMPLETION RATE
+		const orderCompletionRate = (countCompleted / countAccepted) * 100;
+
+		res.status(200).json({ orderCompletionRate });
+	} catch (error) {
+		console.log(error.message);
+		res.status(500).json({ message: error.message });
+	}
+});
+
+//GET ACTIVE ORDERS COUNT OF A SELLER
+router.get("/activeOrders/:id", async (req, res) => {
+	try {
+		//GET ALL ORDERS OF A SELLER
+		const orders = await order.where("sellerId", "==", req.params.id).get();
+		//GET ALL ACTIVE ORDERS OF A SELLER
+		const activeOrders = orders.docs.filter(
+			(order) => order.data().status === "1" || order.data().status === "4"
+		);
+		//COUNT OF ACTIVE ORDERS
+		const countActive = activeOrders.length;
+
+		res.status(200).json({ countActive });
 	} catch (error) {
 		console.log(error.message);
 		res.status(500).json({ message: error.message });

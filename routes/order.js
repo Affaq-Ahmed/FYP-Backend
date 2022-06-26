@@ -1,10 +1,11 @@
 const express = require("express");
 const router = express.Router();
 const { db } = require("../config/firebase");
+const { FieldValue } = require("firebase-admin/firestore");
 
 const order = db.collection("orders");
 const service = db.collection("services");
-const notification = db.collection("notifications");
+const user = db.collection("users");
 
 const notificationText = {
 	1: [
@@ -21,6 +22,38 @@ const notificationText = {
 	6: ["Your order has been started.", "آپ کا آرڈر شروع کر دیا گیا ہے۔"],
 	7: ["Your order has been rejected", "آپ کا آرڈر منسوخ کر دیا گیا ہے۔"],
 };
+
+//GET SERVICE COUNT AND NEW SERVICES TODAY
+router.get("/count", async (req, res) => {
+	try {
+		//GET SERVICE COUNT
+		const snapshot = await order.get();
+		var orderCount = snapshot.size;
+
+		//GET NEW SERVICES TODAY
+		const today = new Date();
+		const todayStart = new Date(
+			today.getFullYear(),
+			today.getMonth(),
+			today.getDate()
+		);
+		const todayEnd = new Date(
+			today.getFullYear(),
+			today.getMonth(),
+			today.getDate(),
+			23,
+			59,
+			59
+		);
+		const snapshot2 = await order.where("createdAt", ">=", todayStart).where("createdAt", "<=", todayEnd).get();
+		var newOrderCount = snapshot2.size;
+
+		res.send({ orderCount, newOrderCount });
+	} catch (error) {
+		console.log(error);
+		res.send(error);
+	}
+})
 
 //CREATE ORDER
 router.post("/createOrder", async (req, res) => {
@@ -51,20 +84,11 @@ router.post("/createOrder", async (req, res) => {
 
 			const result = await order.add(orderData);
 
+			const serviceRef = await service.doc(data.serviceId).update({
+				orders: FieldValue.arrayUnion(result.id),
+			});
+
 			const notificationGeneratedSeller = {
-				seen: false,
-				type: "order",
-				orderId: result.id,
-				category: data.category,
-				text: notificationText[2],
-				createdOn: date,
-			};
-
-			const notificationResult = await notification
-				.doc(buyerId)
-				.add(notificationGenerated);
-
-			const notificationGeneratedClient = {
 				seen: false,
 				type: "order",
 				orderId: result.id,
@@ -73,9 +97,24 @@ router.post("/createOrder", async (req, res) => {
 				createdOn: date,
 			};
 
-			const notificationResult2 = await notification
-				.doc(sellerId)
-				.add(notificationGenerated);
+			const notificationResult = await user
+				.doc(data.buyerId)
+				.collection("notifications")
+				.add(notificationGeneratedSeller);
+
+			const notificationGeneratedClient = {
+				seen: false,
+				type: "order",
+				orderId: result.id,
+				category: data.category,
+				text: notificationText[2],
+				createdOn: date,
+			};
+
+			const notificationResult2 = await user
+				.doc(data.sellerId)
+				.collection("notifications")
+				.add(notificationGeneratedClient);
 
 			console.log(result);
 			res.status(201).json("Order Created.");
@@ -92,7 +131,7 @@ router.put("/acceptOrder", async (req, res) => {
 		const resultOrder = await order.doc(req.body.orderId).get();
 
 		if (!resultOrder.exists) {
-			res.status(404).send("Order Not Found.");
+			res.status(200).send("Order Not Found.");
 		} else {
 			if (
 				resultOrder.data().status === "0" &&
@@ -127,6 +166,11 @@ router.put("/rejectOrder", async (req, res) => {
 				const result = await order.doc(req.body.orderId).update({
 					status: "2",
 				});
+
+				const serviceRef = await service.doc(data.serviceId).update({
+					orders: FieldValue.arrayRemove(req.body.orderId),
+				});	
+
 				res.status(200).json("Order Rejected.");
 			} else {
 				res.status(200).json("Order Not Rejected.");
@@ -275,7 +319,7 @@ router.get("/completedOrdersClient/:id", async (req, res) => {
 			.get();
 
 		if (result.empty) {
-			res.status(404).send([]);
+			res.status(200).send([]);
 		} else {
 			const orders = [];
 			result.forEach((doc) => {
