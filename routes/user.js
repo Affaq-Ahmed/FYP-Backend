@@ -193,8 +193,27 @@ router.get("/byId/:id", async (req, res) => {
 		const result = await user.doc(req.params.id).get();
 		if (!result.exists) res.send("User Does not Exists.");
 		else {
-			console.log(result._fieldsProto);
-			res.send(result._fieldsProto);
+			const user = {
+				address: result._fieldsProto.address.stringValue,
+				dob: result._fieldsProto.dob.stringValue,
+				firstName: result._fieldsProto.firstName.stringValue,
+				lastName: result._fieldsProto.lastName.stringValue,
+				profileImage: result._fieldsProto.profileImage.stringValue,
+				phone: result._fieldsProto.phone.stringValue,
+				cnic: result._fieldsProto.cnic.stringValue,
+				email: result._fieldsProto.email.stringValue,
+				profileStatus: result._fieldsProto.profileStatus.stringValue,
+				createdOn: result._fieldsProto.createdOn.stringValue,
+				services: result._fieldsProto.services.arrayValue.values.map(
+					(service) => {
+						return service.stringValue;
+					}
+				),
+				sellerLevel: result._fieldsProto.sellerLevel.stringValue,
+				preference: result._fieldsProto.preference.mapValue.fields,
+			};
+			console.log(user);
+			res.status(200).json({ user });
 		}
 	} catch (error) {
 		console.log(error);
