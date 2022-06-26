@@ -3,7 +3,7 @@ const router = express.Router();
 const { db } = require("../config/firebase");
 
 const report = db.collection("report");
-const order = db.collection("order");
+const order = db.collection("orders");
 const user = db.collection("users");
 
 //CREATE A REPORT
@@ -36,4 +36,5 @@ router.post("/", async (req, res) => {
 		res.status(500).send(error);
 	}
 });
+
 module.exports = router;
