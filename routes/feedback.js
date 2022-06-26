@@ -50,13 +50,12 @@ router.post("/", async (req, res) => {
 
 		const serviceData = serviceRef.data();
 		const rating = serviceData.rating;
-		const feedbackCount = serviceData.feedbackCount;
+		const feedbackCount = serviceData.feedback.length;
 		const newRating =
 			(rating * feedbackCount + req.body.rating) / (feedbackCount + 1);
 		const newFeedbackCount = feedbackCount + 1;
 		const serviceRef2 = await service.doc(req.body.serviceId).update({
 			rating: newRating,
-			feedbackCount: newFeedbackCount,
 		});
 
 		res.status(200).json("Feedback added successfully");
