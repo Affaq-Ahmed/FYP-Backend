@@ -61,7 +61,8 @@ router.post("/createOrder", async (req, res) => {
 			};
 
 			const notificationResult = await user
-				.doc(buyerId).collection("notifications")
+				.doc(data.buyerId)
+				.collection("notifications")
 				.add(notificationGeneratedSeller);
 
 			const notificationGeneratedClient = {
@@ -74,7 +75,7 @@ router.post("/createOrder", async (req, res) => {
 			};
 
 			const notificationResult2 = await user
-				.doc(sellerId)
+				.doc(data.sellerId)
 				.collection("notifications")
 				.add(notificationGeneratedClient);
 
