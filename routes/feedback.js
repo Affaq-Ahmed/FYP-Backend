@@ -93,7 +93,8 @@ async function updateSellerRating(sellerId, rating) {
 	for (let i = 0; i < feedbacks.length; i++) {
 		sellerRating += feedbacks[i].rating;
 	}
-	sellerRating = sellerRating + rating / feedbacks.length + 1;
+	sellerRating += rating;
+	sellerRating = sellerRating / (feedbacks.length + 1);
 	//UPDATE RATING OF THE SELLER
 	const sellerRef = await user.doc(sellerId).update({
 		rating: sellerRating,

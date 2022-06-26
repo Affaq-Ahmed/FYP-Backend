@@ -56,7 +56,7 @@ router.post("/approveUser", async (req, res) => {
 router.post("/rejectUser", async (req, res) => {
 	try {
 		const userRef = await user.doc(req.body.uid).update({
-			profileStatus: "3",
+			profileStatus: "0",
 		});
 
 		res.status(200).json("User rejected successfully");
