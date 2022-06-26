@@ -1,5 +1,6 @@
 const express = require("express");
 const bodyParser = require("body-parser");
+var cors = require("cors");
 const user = require("./../routes/user");
 const service = require("./../routes/service");
 const order = require("./../routes/order");
@@ -13,6 +14,7 @@ const error = require("./../middleware/error");
 module.exports = function (app) {
 	app.use(express.json());
 	app.use(bodyParser.json());
+	app.use(cors());
 
 	app.use("/api/users", user);
 	app.use("/api/services", service);
