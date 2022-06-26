@@ -22,7 +22,7 @@ router.get("/", async (req, res) => {
 //GET ALL PENDING USERS
 router.get("/pendingUsers", async (req, res) => {
 	try {
-		const userSnapshot = await user.where("profileStatus", "==", "2").get();
+		const userSnapshot = await user.where("profileStatus", "==", "0").get();
 
 		const userData = userSnapshot.docs
 			.map((doc) => {
@@ -244,11 +244,29 @@ router.get("/orderCompletionRate/:id", async (req, res) => {
 		const orderCompletionRate = (countCompleted / countAccepted) * 100;
 
 		res.status(200).json({ orderCompletionRate });
-
 	} catch (error) {
 		console.log(error.message);
 		res.status(500).json({ message: error.message });
 	}
-})
+});
+
+//GET ACTIVE ORDERS COUNT OF A SELLER
+router.get("/activeOrders/:id", async (req, res) => {
+	try {
+		//GET ALL ORDERS OF A SELLER
+		const orders = await order.where("sellerId", "==", req.params.id).get();
+		//GET ALL ACTIVE ORDERS OF A SELLER
+		const activeOrders = orders.docs.filter(
+			(order) => order.data().status === "1" || order.data().status === "4"
+		);
+		//COUNT OF ACTIVE ORDERS
+		const countActive = activeOrders.length;
+
+		res.status(200).json({ countActive });
+	} catch (error) {
+		console.log(error.message);
+		res.status(500).json({ message: error.message });
+	}
+});
 
 module.exports = router;
