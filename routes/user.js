@@ -194,6 +194,7 @@ router.get("/byId/:id", async (req, res) => {
 		if (!result) res.send("User Does not Exists.");
 		else {
 			const user = {
+				id: result.id,
 				address: result._fieldsProto.address.stringValue,
 				dob: result._fieldsProto.dob.stringValue,
 				firstName: result._fieldsProto.firstName.stringValue,
