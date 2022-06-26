@@ -38,8 +38,9 @@ router.post("/", async (req, res) => {
 			createdOn: new Date(),
 		};
 		const feedbackRef = await feedback.add(data);
+    console.log(feedbackRef);
 
-		const service = await service.doc(req.body.serviceId).update({
+		const serviceRef = await service.doc(req.body.serviceId).update({
 			feedback: FieldValue.arrayUnion(feedbackRef.id),
 		});
 
