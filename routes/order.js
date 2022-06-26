@@ -23,6 +23,38 @@ const notificationText = {
 	7: ["Your order has been rejected", "آپ کا آرڈر منسوخ کر دیا گیا ہے۔"],
 };
 
+//GET SERVICE COUNT AND NEW SERVICES TODAY
+router.get("/count", async (req, res) => {
+	try {
+		//GET SERVICE COUNT
+		const snapshot = await order.get();
+		var orderCount = snapshot.size;
+
+		//GET NEW SERVICES TODAY
+		const today = new Date();
+		const todayStart = new Date(
+			today.getFullYear(),
+			today.getMonth(),
+			today.getDate()
+		);
+		const todayEnd = new Date(
+			today.getFullYear(),
+			today.getMonth(),
+			today.getDate(),
+			23,
+			59,
+			59
+		);
+		const snapshot2 = await order.where("createdAt", ">=", todayStart).where("createdAt", "<=", todayEnd).get();
+		var newOrderCount = snapshot2.size;
+
+		res.send({ orderCount, newOrderCount });
+	} catch (error) {
+		console.log(error);
+		res.send(error);
+	}
+})
+
 //CREATE ORDER
 router.post("/createOrder", async (req, res) => {
 	try {
