@@ -155,6 +155,11 @@ router.put("/acceptOrder", async (req, res) => {
 				const result = await order.doc(req.body.orderId).update({
 					status: "1",
 				});
+
+				const buyer = await user.doc(resultOrder.data().buyerId).update({
+					balance: FieldValue.decrement(resultOrder.data().price),
+				});
+
 				res.status(200).json("Order Accepted.");
 			} else {
 				res.status(200).json("Order Not Accepted.");
@@ -216,6 +221,7 @@ router.put("/completeOrder", async (req, res) => {
 				//UPDATE EARNINGS OF THE SELLER
 				const userRef = await user.doc(resultOrder.sellerId).update({
 					earnings: FieldValue.increment(resultOrder.price),
+					balance: FieldValue.increment(resultOrder.price * 0.9),
 				});
 
 				res.status(200).json("Order Completed.");
