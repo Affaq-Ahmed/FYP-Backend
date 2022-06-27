@@ -155,9 +155,9 @@ router.put("/acceptOrder", async (req, res) => {
 				const result = await order.doc(req.body.orderId).update({
 					status: "1",
 				});
-
+				console.log(result);
 				const buyer = await user.doc(resultOrder.data().buyerId).update({
-					balance: FieldValue.decrement(resultOrder.data().price),
+					balance: FieldValue.increment(-resultOrder.data().price),
 				});
 
 				res.status(200).json("Order Accepted.");
