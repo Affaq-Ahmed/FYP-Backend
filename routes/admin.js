@@ -26,13 +26,8 @@ router.post("/", async (req, res) => {
 		};
 		const adminRef = await admin.doc(req.body.uid).set(data);
 
-		const adminSnapshot = await adminRef.get();
-
-		const adminData = adminSnapshot.data();
-		adminData.id = adminSnapshot.id;
-
-		res.status(201).json(adminData);
-	} catch(error) {
+		res.status(201).json("ADMIN CREATED");
+	} catch (error) {
 		console.log(error);
 		res.status(500).send(error);
 	}
