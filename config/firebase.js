@@ -16,7 +16,8 @@ const {
 	getDownloadURL,
 } = require("firebase-admin/storage");
 
-const serviceAccount = require("./tapnhire-67b12-firebase-adminsdk-t0tqd-66572da272.json");
+// const serviceAccount = require("./tapnhire-67b12-firebase-adminsdk-t0tqd-66572da272.json");
+const serviceAccount = require("./tapnhire-fyp-firebase-adminsdk-4u8kl-84b10350f2.json");
 
 const firebaseConfig = {
 	// apiKey: "AIzaSyBsVPIiTB-Mw9ePANHn37mjJkX9mz9IN0Y",
