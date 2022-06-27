@@ -86,6 +86,21 @@ router.get("/userCount", async (req, res) => {
 	}
 });
 
+//TOTAL EARNINGS OF A SELLER
+router.get("/totalEarnings/:uid", async (req, res) => {
+	try {
+		const userSnapshot = await user.doc(req.params.uid).get();
+
+		const userData = userSnapshot.data();
+		const totalEarnings = userData.earnings;
+
+		res.status(200).json(totalEarnings);
+	} catch (error) {
+		console.log(error);
+		res.status(500).send(error);
+	}
+});
+
 //CREATE A USER
 router.post("/createProfile", async (req, res) => {
 	console.log(req.body);
@@ -116,6 +131,7 @@ router.post("/createProfile", async (req, res) => {
 				services: [],
 				sellerLevel: "Beginner",
 				preference: data.preference,
+				earnings: 0,
 			};
 
 			const result = await user.doc(data.uId).set(userData);
