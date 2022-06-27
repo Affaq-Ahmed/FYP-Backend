@@ -221,7 +221,7 @@ router.put("/completeOrder", async (req, res) => {
 				//UPDATE EARNINGS OF THE SELLER
 				const newBalance = resultOrder.data().price * 0.9;
 				const userRef = await user.doc(resultOrder.data().sellerId).update({
-					earnings: FieldValue.increment(resultOrder.data().price),
+					earnings: FieldValue.increment(parseInt(resultOrder.data().price)),
 					balance: FieldValue.increment(parseInt(newBalance)),
 				});
 
