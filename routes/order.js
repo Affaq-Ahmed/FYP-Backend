@@ -61,7 +61,7 @@ router.get("/count", async (req, res) => {
 //ACTIVE ORDERS COUNT
 router.get("/active", async (req, res) => {
 	try {
-		const snapshot = await order.where("status", ">", 0).get();
+		const snapshot = await order.where("status", "==", "1").get();
 		var orderCount = snapshot.size;
 		res.send(orderCount);
 	} catch (error) {
