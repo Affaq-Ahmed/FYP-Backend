@@ -22,7 +22,7 @@ router.post("/", async (req, res) => {
 			phone: req.body.phone,
 			address: req.body.address,
 			createdOn: new Date(),
-			image: req.body.image,
+			profileImage: req.body.image,
 		};
 		const adminRef = await admin.doc(req.body.uid).set(data);
 
