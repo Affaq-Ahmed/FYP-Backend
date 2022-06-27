@@ -45,7 +45,10 @@ router.get("/count", async (req, res) => {
 			59,
 			59
 		);
-		const snapshot2 = await order.where("createdAt", ">=", todayStart).where("createdAt", "<=", todayEnd).get();
+		const snapshot2 = await order
+			.where("createdAt", ">=", todayStart)
+			.where("createdAt", "<=", todayEnd)
+			.get();
 		var newOrderCount = snapshot2.size;
 
 		res.send({ orderCount, newOrderCount });
@@ -53,7 +56,7 @@ router.get("/count", async (req, res) => {
 		console.log(error);
 		res.send(error);
 	}
-})
+});
 
 //CREATE ORDER
 router.post("/createOrder", async (req, res) => {
@@ -169,7 +172,7 @@ router.put("/rejectOrder", async (req, res) => {
 
 				const serviceRef = await service.doc(data.serviceId).update({
 					orders: FieldValue.arrayRemove(req.body.orderId),
-				});	
+				});
 
 				res.status(200).json("Order Rejected.");
 			} else {
@@ -197,6 +200,12 @@ router.put("/completeOrder", async (req, res) => {
 				const result = await order.doc(req.body.orderId).update({
 					status: "3",
 				});
+
+				//UPDATE EARNINGS OF THE SELLER
+				const userRef = await user.doc(resultOrder.sellerId).update({
+					earnings: FieldValue.increment(resultOrder.price),
+				});
+
 				res.status(200).json("Order Completed.");
 			} else {
 				res.status(200).json("Order Not Completed.");

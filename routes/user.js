@@ -101,6 +101,32 @@ router.get("/totalEarnings/:uid", async (req, res) => {
 	}
 });
 
+//EARNINGS OF ALL SERVICES OF A SELLER IN CURRENT MONTH
+router.get("/monthlyEarnings/:uid", async (req, res) => {
+	try {
+		//Get SELLER
+		const userSnapshot = await user.doc(req.params.uid).get();
+		//GET ALL COMPLETED ORDERS OF SELLER
+		const ordersSnapshot = await db
+			.collection("orders")
+			.where("sellerId", "==", req.params.uid)
+			.where("status", "==", "3")
+			.get();
+
+		//ADD PRICE OF ALL COMPLETED ORDERS OF SELLER
+		var totalEarnings = 0;
+		ordersSnapshot.forEach((doc) => {
+			const data = doc.data();
+			totalEarnings += data.price;
+		});
+
+		res.status(200).json(totalEarnings);
+	} catch (error) {
+		console.log(error);
+		res.status(500).send(error);
+	}
+});
+
 //CREATE A USER
 router.post("/createProfile", async (req, res) => {
 	console.log(req.body);
