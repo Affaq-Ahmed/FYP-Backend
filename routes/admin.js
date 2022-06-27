@@ -24,7 +24,7 @@ router.post("/", async (req, res) => {
 			createdOn: new Date(),
 			image: req.body.image,
 		};
-		const adminRef = await admin.doc(req.body.uid).add(data);
+		const adminRef = await admin.doc(req.body.uid).set(data);
 
 		const adminSnapshot = await adminRef.get();
 
