@@ -58,15 +58,18 @@ router.get("/count", async (req, res) => {
 	}
 });
 
-//ACTIVE ORDERS COUNT
+//ACTIVE ORDERS COUNT OF A SELLER
 router.get("/active", async (req, res) => {
 	try {
-		const snapshot = await order.where("status", "==", "1").get();
+		const snapshot = await order
+			.where("sellerId", "==", req.query.sellerId)
+			.where("status", "==", "1")
+			.get();
 		var orderCount = snapshot.size;
-		res.send(orderCount);
+		res.status(200).send(orderCount);
 	} catch (error) {
 		console.log(error);
-		res.send(error);
+		res.status(500).send(error);
 	}
 });
 
