@@ -113,7 +113,6 @@ router.get("/monthlyEarnings/:uid", async (req, res) => {
 			.where("status", "==", "3")
 			.get();
 
-
 		//ADD PRICE OF ALL COMPLETED ORDERS OF SELLER
 		var totalEarnings = 0;
 		ordersSnapshot.forEach((doc) => {
@@ -160,6 +159,7 @@ router.post("/createProfile", async (req, res) => {
 				preference: data.preference,
 				earnings: 0,
 				balance: 0,
+				rating: 0,
 			};
 
 			const result = await user.doc(data.uId).set(userData);
