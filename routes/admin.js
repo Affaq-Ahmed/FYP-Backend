@@ -23,6 +23,7 @@ router.post("/", async (req, res) => {
 			address: req.body.address,
 			createdOn: new Date(),
 			profileImage: req.body.image,
+			cnic: req.body.CNIC
 		};
 		const adminRef = await admin.doc(req.body.uid).set(data);
 

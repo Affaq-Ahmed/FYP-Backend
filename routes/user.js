@@ -158,6 +158,7 @@ router.post("/createProfile", async (req, res) => {
 				sellerLevel: "Beginner",
 				preference: data.preference,
 				earnings: 0,
+				balance: 0,
 			};
 
 			const result = await user.doc(data.uId).set(userData);
@@ -220,6 +221,8 @@ router.get("/:username", async (req, res) => {
 				),
 				sellerLevel: result._fieldsProto.sellerLevel.stringValue,
 				preference: result._fieldsProto.preference.mapValue.fields,
+				earnings: result._fieldsProto.earnings.integerValue,
+				balance: result._fieldsProto.balance.integerValue,
 			};
 			console.log(user);
 			res.status(200).json({ user });
