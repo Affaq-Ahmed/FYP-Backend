@@ -219,9 +219,9 @@ router.put("/completeOrder", async (req, res) => {
 				});
 
 				//UPDATE EARNINGS OF THE SELLER
-				const userRef = await user.doc(resultOrder.sellerId).update({
-					earnings: FieldValue.increment(resultOrder.price),
-					balance: FieldValue.increment(resultOrder.price * 0.9),
+				const userRef = await user.doc(resultOrder.data().sellerId).update({
+					earnings: FieldValue.increment(resultOrder.data().price),
+					balance: FieldValue.increment(resultOrder.data().price * 0.9),
 				});
 
 				res.status(200).json("Order Completed.");
