@@ -70,7 +70,7 @@ router.post("/category", async (req, res) => {
 			createdOn: new Date(),
 			imageUrl: req.body.imageURL,
 		};
-		const categoryRef = await category.doc(req.body.uid).add(data);
+		const categoryRef = await category.doc(req.body.id).add(data);
 
 		res.status(201).json("Category Created Successfully");
 	} catch (error) {
