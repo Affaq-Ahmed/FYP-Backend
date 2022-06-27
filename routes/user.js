@@ -223,6 +223,7 @@ router.get("/:username", async (req, res) => {
 				preference: result._fieldsProto.preference.mapValue.fields,
 				earnings: result._fieldsProto.earnings.integerValue,
 				balance: result._fieldsProto.balance.integerValue,
+				rating: result._fieldsProto.rating.integerValue,
 			};
 			console.log(user);
 			res.status(200).json({ user });
