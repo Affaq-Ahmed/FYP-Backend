@@ -53,8 +53,7 @@ router.post("/", async (req, res) => {
 		const rating = serviceData.rating;
 		const feedbackCount = serviceData.feedback.length;
 		const newRating =
-			(rating * feedbackCount + req.body.rating) / (feedbackCount + 1);
-		const newFeedbackCount = feedbackCount + 1;
+			(rating * feedbackCount + req.body.rating) / feedbackCount;
 		const serviceRef2 = await service.doc(req.body.serviceId).update({
 			rating: newRating,
 		});
