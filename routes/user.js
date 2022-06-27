@@ -106,12 +106,13 @@ router.get("/monthlyEarnings/:uid", async (req, res) => {
 	try {
 		//Get SELLER
 		const userSnapshot = await user.doc(req.params.uid).get();
-		//GET ALL COMPLETED ORDERS OF SELLER
+		//GET ALL COMPLETED ORDERS OF SELLER IN CURRENT MONTH
 		const ordersSnapshot = await db
 			.collection("orders")
 			.where("sellerId", "==", req.params.uid)
 			.where("status", "==", "3")
 			.get();
+
 
 		//ADD PRICE OF ALL COMPLETED ORDERS OF SELLER
 		var totalEarnings = 0;
