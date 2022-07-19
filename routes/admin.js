@@ -18,21 +18,17 @@ router.post("/", async (req, res) => {
 			lastName: req.body.lastName,
 			username: req.body.username,
 			email: req.body.email,
-			DoB: req.body.DoB,
+			dob: req.body.dateOfBirth,
 			phone: req.body.phone,
 			address: req.body.address,
 			createdOn: new Date(),
-			image: req.body.image,
+			profileImage: req.body.image,
+			cnic: req.body.CNIC
 		};
-		const adminRef = await admin.doc(req.body.uid).add(data);
+		const adminRef = await admin.doc(req.body.uid).set(data);
 
-		const adminSnapshot = await adminRef.get();
-
-		const adminData = adminSnapshot.data();
-		adminData.id = adminSnapshot.id;
-
-		res.status(201).json(adminData);
-	} catch {
+		res.status(201).json("ADMIN CREATED");
+	} catch (error) {
 		console.log(error);
 		res.status(500).send(error);
 	}
@@ -74,7 +70,7 @@ router.post("/category", async (req, res) => {
 			createdOn: new Date(),
 			imageUrl: req.body.imageURL,
 		};
-		const categoryRef = await category.doc(req.body.uid).add(data);
+		const categoryRef = await category.doc(req.body.id).add(data);
 
 		res.status(201).json("Category Created Successfully");
 	} catch (error) {

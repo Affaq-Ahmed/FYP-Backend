@@ -45,7 +45,10 @@ router.get("/count", async (req, res) => {
 			59,
 			59
 		);
-		const snapshot2 = await order.where("createdAt", ">=", todayStart).where("createdAt", "<=", todayEnd).get();
+		const snapshot2 = await order
+			.where("createdAt", ">=", todayStart)
+			.where("createdAt", "<=", todayEnd)
+			.get();
 		var newOrderCount = snapshot2.size;
 
 		res.send({ orderCount, newOrderCount });
@@ -53,7 +56,22 @@ router.get("/count", async (req, res) => {
 		console.log(error);
 		res.send(error);
 	}
-})
+});
+
+//ACTIVE ORDERS COUNT OF A SELLER
+router.get("/active", async (req, res) => {
+	try {
+		const snapshot = await order
+			.where("sellerId", "==", req.query.sellerId)
+			.where("status", "==", "1")
+			.get();
+		var orderCount = snapshot.size;
+		res.status(200).send(orderCount);
+	} catch (error) {
+		console.log(error);
+		res.status(500).send(error);
+	}
+});
 
 //CREATE ORDER
 router.post("/createOrder", async (req, res) => {
@@ -140,6 +158,11 @@ router.put("/acceptOrder", async (req, res) => {
 				const result = await order.doc(req.body.orderId).update({
 					status: "1",
 				});
+				console.log(result);
+				const buyer = await user.doc(resultOrder.data().buyerId).update({
+					balance: FieldValue.increment(-resultOrder.data().price),
+				});
+
 				res.status(200).json("Order Accepted.");
 			} else {
 				res.status(200).json("Order Not Accepted.");
@@ -169,7 +192,7 @@ router.put("/rejectOrder", async (req, res) => {
 
 				const serviceRef = await service.doc(data.serviceId).update({
 					orders: FieldValue.arrayRemove(req.body.orderId),
-				});	
+				});
 
 				res.status(200).json("Order Rejected.");
 			} else {
@@ -197,6 +220,14 @@ router.put("/completeOrder", async (req, res) => {
 				const result = await order.doc(req.body.orderId).update({
 					status: "3",
 				});
+
+				//UPDATE EARNINGS OF THE SELLER
+				const newBalance = resultOrder.data().price * 0.9;
+				const userRef = await user.doc(resultOrder.data().sellerId).update({
+					earnings: FieldValue.increment(parseInt(resultOrder.data().price)),
+					balance: FieldValue.increment(parseInt(newBalance)),
+				});
+
 				res.status(200).json("Order Completed.");
 			} else {
 				res.status(200).json("Order Not Completed.");

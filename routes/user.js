@@ -86,6 +86,47 @@ router.get("/userCount", async (req, res) => {
 	}
 });
 
+//TOTAL EARNINGS OF A SELLER
+router.get("/totalEarnings/:uid", async (req, res) => {
+	try {
+		const userSnapshot = await user.doc(req.params.uid).get();
+
+		const userData = userSnapshot.data();
+		const totalEarnings = userData.earnings;
+
+		res.status(200).json(totalEarnings);
+	} catch (error) {
+		console.log(error);
+		res.status(500).send(error);
+	}
+});
+
+//EARNINGS OF ALL SERVICES OF A SELLER IN CURRENT MONTH
+router.get("/monthlyEarnings/:uid", async (req, res) => {
+	try {
+		//Get SELLER
+		const userSnapshot = await user.doc(req.params.uid).get();
+		//GET ALL COMPLETED ORDERS OF SELLER IN CURRENT MONTH
+		const ordersSnapshot = await db
+			.collection("orders")
+			.where("sellerId", "==", req.params.uid)
+			.where("status", "==", "3")
+			.get();
+
+		//ADD PRICE OF ALL COMPLETED ORDERS OF SELLER
+		var totalEarnings = 0;
+		ordersSnapshot.forEach((doc) => {
+			const data = doc.data();
+			totalEarnings += data.price;
+		});
+
+		res.status(200).json(totalEarnings);
+	} catch (error) {
+		console.log(error);
+		res.status(500).send(error);
+	}
+});
+
 //CREATE A USER
 router.post("/createProfile", async (req, res) => {
 	console.log(req.body);
@@ -116,6 +157,9 @@ router.post("/createProfile", async (req, res) => {
 				services: [],
 				sellerLevel: "Beginner",
 				preference: data.preference,
+				earnings: 0,
+				balance: 0,
+				rating: 0,
 			};
 
 			const result = await user.doc(data.uId).set(userData);
@@ -178,6 +222,9 @@ router.get("/:username", async (req, res) => {
 				),
 				sellerLevel: result._fieldsProto.sellerLevel.stringValue,
 				preference: result._fieldsProto.preference.mapValue.fields,
+				earnings: result._fieldsProto.earnings.integerValue,
+				balance: result._fieldsProto.balance.integerValue,
+				rating: result._fieldsProto.rating.integerValue,
 			};
 			console.log(user);
 			res.status(200).json({ user });
